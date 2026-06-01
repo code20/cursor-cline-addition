@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build your own multi-model AI coding assistant for £4–8/month. Step-by-step guide with Cursor, Cline, and OpenRouter. No lock-in, full privacy, tested on Windows 11.">
+    <meta property="og:title" content="I Built a Cursor Ultra Alternative for £4–8/Month — The 2026 OpenRouter Guide">
+    <meta property="og:description" content="One API key, one proxy, the best open-weight models. Full privacy, zero surprises, and pocket-change pricing for everyday developers.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><rect fill='%230b0f1c' width='1200' height='630'/><text x='60' y='200' font-family='system-ui' font-size='48' font-weight='bold' fill='%2338bdf8'>I Built a Cursor Ultra Alternative</text><text x='60' y='280' font-family='system-ui' font-size='48' font-weight='bold' fill='%23a78bfa'>for £4–8/Month</text><text x='60' y='380' font-family='system-ui' font-size='28' fill='%2394a3b8'>The Cursor Cline Addition — Multi-Model, Private, Cheap</text><text x='60' y='500' font-family='monospace' font-size='22' fill='%2364748b'>DeepSeek V4 Pro default | #flash for bulk | #kimi for critical tasks</text></svg>">
+    <title>I Built a Cursor Ultra Alternative for £4–8/Month — The Cursor Cline Addition</title>
+    <style>
+        :root {
+            --bg: #0b0f1c;
+            --card-bg: #131828;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent2: #a78bfa;
+            --border: #1e293b;
+            --green: #10b981;
+            --red: #ef4444;
+            --code-bg: #1e293b;
+            --radius: 1rem;
+            --shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2.5rem 2rem;
+            border: 1px solid var(--border);
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1.5rem; }
+        }
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #38bdf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a78bfa;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: #f1f5f9;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.4rem;
+        }
+        h3 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #e2e8f0;
+        }
+        p, li { color: var(--muted); margin-bottom: 1rem; }
+        strong { color: #f1f5f9; }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent);
+            transition: all 0.2s;
+        }
+        a:hover { border-bottom-style: solid; color: #7cc6f2; }
+        code {
+            background: var(--code-bg);
+            padding: 0.2em 0.5em;
+            border-radius: 0.3em;
+            font-size: 0.9em;
+            color: #fbbf24;
+            border: 1px solid var(--border);
+        }
+        pre {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #cbd5e1;
+            border: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: #0f172a;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: #1e293b;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+        .badge {
+            display: inline-block;
+            padding: 0.15em 0.6em;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        .badge.green { background: #064e3b; color: #6ee7b7; }
+        .badge.red { background: #7f1d1d; color: #fca5a5; }
+        .badge.blue { background: #1e3a5f; color: #93c5fd; }
+        .badge.yellow { background: #5c4a00; color: #fde047; }
+        .callout {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        .tldr {
+            background: linear-gradient(135deg, #1e3a5f, #0f172a);
+            border-left: 4px solid #38bdf8;
+            padding: 1.2rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+            line-height: 1.8;
+        }
+        .tldr strong { color: #f1f5f9; }
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+        .cheatsheet-box {
+            background: #0f172a;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+        }
+        ul { padding-left: 1.5rem; }
+        ol { padding-left: 1.5rem; }
+        .toc {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .toc summary {
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+        .toc ol {
+            list-style: none;
+            padding-left: 0;
+            margin-left: 1rem;
+        }
+        .toc li { margin-bottom: 0.3rem; }
+        .toc a { border-bottom: none; }
+        .os-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+        }
+        .os-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 0.5rem 0.5rem 0 0;
+            background: transparent;
+            color: var(--muted);
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+            margin-bottom: -2px;
+            border: 2px solid transparent;
+        }
+        .os-tab.active {
+            background: var(--code-bg);
+            color: #f1f5f9;
+            border: 2px solid var(--border);
+            border-bottom-color: var(--code-bg);
+        }
+        .os-tab.win-tested {
+            position: relative;
+        }
+        .os-tab.win-tested::after {
+            content: "✓";
+            color: #10b981;
+            margin-left: 0.3rem;
+            font-size: 0.8rem;
+        }
+        .os-panel { display: none; }
+        .os-panel.active { display: block; }
+        details.inline-script {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+        }
+        details.inline-script summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+        .platform-note {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0 1rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .platform-note strong { color: #f1f5f9; }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.6rem; }
+            h2 { font-size: 1.2rem; }
+            .os-tabs { flex-wrap: wrap; }
+            .os-tab { font-size: 0.75rem; padding: 0.4rem 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>I Built a Cursor Ultra Alternative for £4–8/Month</h1>
+    <p class="subtitle">The Cursor Cline Addition — 2026 OpenRouter Guide</p>
+
+    <div class="tldr">
+        <strong>TL;DR:</strong> I built a multi-model AI coding assistant that runs inside Cursor (free) and costs <strong>£4–8/month</strong> for typical use. It's private, battle-tested with a real production app, and gives you access to DeepSeek, Kimi, Gemini, and more — all switchable by hashtag. This guide walks you through every step. <strong>No lock-in, no surprise bills.</strong> Just a smarter way to code with AI.<br><br>
+        <strong>⚠️ Tested on Windows 11.</strong> macOS and Linux instructions are provided as a courtesy — they follow standard conventions but haven't been battle-tested on those platforms.
+    </div>
+
+    <p style="font-size:1.05rem; color:#cbd5e1; line-height:1.8;">
+        I'm a developer who loves building hobby projects and tinkering with new tech — but the costs were restrictive to really do anything real. When I looked at what Cursor Ultra was charging, I knew there had to be a better way.<br><br>
+        So I built my own.<br><br>
+        This blog documents the entire journey: setting up a multi‑model AI coding assistant that runs inside Cursor (free) and Cline, powered by OpenRouter. It costs the typical developer around £4–8/month, gives me full privacy and control, and handles everything from quick edits to complex agentic coding. I've battle‑tested it by building a complete production app — a car‑hire website with a full CMS, admin panel, and documentation.<br><br>
+        The result is a genuinely powerful, private, and affordable setup that lets me learn, experiment, and ship side projects without worrying about a surprise bill at the end of the month. I wrote this guide so you can do the same — whether you're learning on the side after work, hacking on a passion project, or just tired of being locked into expensive subscriptions.<br><br>
+        Everything here is real, tested, and working on <strong>Windows 11</strong>. No hacks, no lock‑in, just a smarter way to code with AI.
+    </p>
+
+    <details class="toc" open>
+        <summary>📑 Table of Contents</summary>
+        <ol>
+            <li><a href="#cost-comparison">What You'll Actually Pay</a></li>
+            <li><a href="#core-team">The Model Lineup</a></li>
+            <li><a href="#cost-data">Real-World Cost Data (Power User)</a></li>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#step1">Step 1: OpenRouter Account Setup</a></li>
+            <li><a href="#step2">Step 2: Project Directory & Environment</a></li>
+            <li><a href="#step3">Step 3: The Unified Proxy</a></li>
+            <li><a href="#step4">Step 4: Auto-Start the Proxy</a></li>
+            <li><a href="#step5">Step 5: Install & Configure Cline</a></li>
+            <li><a href="#step6">Step 6: MCP Servers</a></li>
+            <li><a href="#step7">Step 7: .clinerules & External AI Context</a></li>
+            <li><a href="#step8">Step 8: Verification</a></li>
+            <li><a href="#cheatsheet">Quick Reference Cheatsheet</a></li>
+            <li><a href="#step9">Step 9: Maintenance</a></li>
+            <li><a href="#troubleshooting">Troubleshooting & Lessons Learned</a></li>
+        </ol>
+    </details>
+
+    <h2 id="cost-comparison">What You'll Actually Pay</h2>
+    <p>This isn't a "$20/month subscription" guide. That's what a <em>power user</em> building an entire production CMS with admin panel and documentation paid in a heavy month. Here's what <strong>you</strong> — the everyday developer — can expect:</p>
+
+    <table>
+        <thead><tr><th>User Type</th><th>Monthly Tokens</th><th>Monthly Cost</th><th>vs. Cursor Ultra ($200)</th></tr></thead>
+        <tbody>
+        <tr><td><span class="badge green">Casual</span></td><td>5–15M</td><td><strong>£2–4</strong></td><td>Saves £196/month</td></tr>
+        <tr><td><span class="badge blue">Typical Developer</span></td><td>20–40M</td><td><strong>£4–8</strong></td><td>Saves £192/month</td></tr>
+        <tr><td><span class="badge red">Power User</span></td><td>80M+</td><td>£12–16</td><td>Saves £184/month</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout">
+        <strong>The headline number is £4–8/month for a typical developer.</strong> That's less than a single takeaway, and 96% cheaper than Cursor Ultra. Even at the extreme end — building a complete CMS with admin panel, seed scripts, and full documentation — the month came in at £14.72. The prepaid system on OpenRouter means you'll never wake up to a surprise bill.
+    </div>
+
+    <h2 id="core-team">The Model Lineup (June 2026)</h2>
+    <p>After weeks of real-world testing, the lineup has been refined for reliability and cost. <strong>DeepSeek V4 Pro is the default workhorse</strong> — 54% cheaper on output than Kimi K2.5. Kimi is reserved for critical multi-step tasks only, summoned by <code>#kimi</code>.</p>
+
+    <table>
+        <thead><tr><th>Role</th><th>Model</th><th>Price /1M tokens</th><th>Use via</th></tr></thead>
+        <tbody>
+        <tr><td><span class="badge blue">Workhorse</span></td><td>DeepSeek V4 Pro</td><td>$0.44 / $0.87</td><td>Default (no prefix)</td></tr>
+        <tr><td><span class="badge green">Bulk & Speed</span></td><td>Gemini 2.5 Flash</td><td>$0.30 / $2.50</td><td><code>#flash</code></td></tr>
+        <tr><td><span class="badge blue">Vision</span></td><td>Perceptron Mk1</td><td>$0.15 / $1.50</td><td><code>#vision</code></td></tr>
+        <tr><td><span class="badge red">Critical Tasks</span></td><td>Kimi K2.5</td><td>$0.40 / $1.98</td><td><code>#kimi</code></td></tr>
+        <tr><td><span class="badge blue">Budget Chat</span></td><td>DeepSeek Chat</td><td>$0.14 / $0.28</td><td><code>#dc</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="cost-data">Real-World Cost Data (Power User, May 2026)</h2>
+    <p>Here's what a <strong>maximum-intensity</strong> month looks like — building a complete Next.js site with Payload CMS, admin panel, seed scripts, and full documentation. This is the ceiling, not the norm:</p>
+
+    <table>
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+        <tr><td>Total spend</td><td><strong>$18.40 (~£14.72)</strong></td></tr>
+        <tr><td>Total requests</td><td>2,000</td></tr>
+        <tr><td>Total tokens</td><td>81.5M</td></tr>
+        <tr><td>Kimi K2.5 spend</td><td>$12.54 — was default for most of month</td></tr>
+        <tr><td>DeepSeek V4 Pro spend</td><td>$5.53 — switched to default late in month</td></tr>
+        <tr><td>Projected cost with DeepSeek default</td><td><strong>$12–16/month</strong></td></tr>
+        <tr><td>Comparable Cursor Ultra</td><td>$200/month</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout">
+        <strong>The takeaway:</strong> Even if you code like a maniac and ship an entire production system, you'll pay less than £15/month. If you're a typical developer doing feature work and bug fixes, you'll land in the £4–8 range. That's 96% less than Cursor Ultra — with better models, full privacy, and zero vendor lock-in.
+    </div>
+
+    <h2 id="prerequisites">Prerequisites</h2>
+    <ul>
+        <li><strong>Python 3.8+</strong> — <a href="https://python.org" target="_blank">python.org</a></li>
+        <li><strong>Node.js 18+</strong> — <a href="https://nodejs.org" target="_blank">nodejs.org</a></li>
+        <li><strong>Cursor</strong> (free) or VS Code — <a href="https://cursor.com" target="_blank">cursor.com</a></li>
+        <li><strong>OpenRouter account</strong> — <a href="https://openrouter.ai" target="_blank">openrouter.ai</a></li>
+        <li><strong>Git</strong> — <a href="https://git-scm.com/downloads" target="_blank">git-scm.com</a></li>
+    </ul>
+    <div class="platform-note">
+        <strong>⚠️ Platform note:</strong> This guide was built and tested on <strong>Windows 11</strong>. macOS and Linux instructions are provided as a courtesy — they follow standard conventions but haven't been battle-tested. If you're on Mac or Linux and hit a snag, the core concepts are identical; you may just need to adapt a path or command.
+    </div>
+
+    <h2 id="step1">Step 1: Set Up Your OpenRouter Account (The Safe Way)</h2>
+    <p><em>Platform-independent — works the same on all OSes via your browser.</em></p>
+    <ol>
+        <li>Sign up at <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> and <strong>enable 2FA</strong>.</li>
+        <li>Create an API key:
+            <ul>
+                <li>Give it a label like <code>ultra-lite-proxy</code> (optional)</li>
+                <li>Credit Limit: <code>$20</code> per month</li>
+                <li>Reset Limit: <code>Monthly</code></li>
+                <li>Expiration: <code>Never</code></li>
+            </ul>
+        </li>
+        <li>Copy the key (<code>sk-or-v1-...</code>).</li>
+        <li>Go to <strong>Billing</strong> → ensure <strong>Auto Top-Up is disabled</strong>.</li>
+        <li>Purchase <strong>$20 in credits</strong> (one-time, no recurring).</li>
+        <li><strong>Guardrails</strong>: In Settings → Privacy → Guardrails, create a budget with a $20 monthly cap. Enable Prompt Injection Detection set to "Flag", and Sensitive Info Detection: only "Credit Card" and "SSN" checked (set to "Redact"). Add a custom pattern for your API key (<code>sk-or-v1-[a-zA-Z0-9]{32,}</code>) and set it to <strong>Block</strong>.</li>
+        <li>Under <strong>Settings → Privacy</strong>, ensure "Zero Data Retention" or all training/logging toggles are off.</li>
+    </ol>
+    <p>Now you have a single API key, a hard spending cap, and full privacy controls.</p>
+
+    <h2 id="step2">Step 2: Project Directory & Environment</h2>
+    <p>We'll store the proxy globally so every project can use it. The only per‑project file you'll ever need is a <code>.clinerules</code> — everything else is global infrastructure.</p>
+
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step2')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step2')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step2')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step2-win" class="os-panel active">
+        <pre><code># Create directory
+New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.config\ultra-lite-proxy
+cd $env:USERPROFILE\.config\ultra-lite-proxy
+
+# Create .env with your REAL key and optional model overrides
+@"
+OPENROUTER_API_KEY=sk-or-v1-...
+# Optional: override default models (uncomment and edit as needed)
+DEFAULT_MODEL=deepseek/deepseek-v4-pro
+# PLANNING_MODEL=deepseek/deepseek-v4-pro
+# BULK_MODEL=google/gemini-2.5-flash
+# RING_MODEL=inclusionai/ring-2.6-1t
+# VISION_MODEL=perceptron/perceptron-mk1
+"@ | Out-File -Encoding ascii .env
+
+# Add .env to .gitignore
+".env" | Out-File -Encoding ascii -Append .gitignore
+
+# (Optional) Harden permissions
+$perm = "$env:USERNAME:(R,W)"
+icacls .env /inheritance:r /grant:r $perm</code></pre>
+    </div>
+    <div id="step2-mac" class="os-panel">
+        <pre><code># Create directory
+mkdir -p ~/.config/ultra-lite-proxy
+cd ~/.config/ultra-lite-proxy
+
+# Create .env with your REAL key and optional model overrides
+cat > .env << 'EOF'
+OPENROUTER_API_KEY=sk-or-v1-...
+# Optional: override default models (uncomment and edit as needed)
+DEFAULT_MODEL=deepseek/deepseek-v4-pro
+# PLANNING_MODEL=deepseek/deepseek-v4-pro
+# BULK_MODEL=google/gemini-2.5-flash
+# RING_MODEL=inclusionai/ring-2.6-1t
+# VISION_MODEL=perceptron/perceptron-mk1
+EOF
+
+# Add .env to .gitignore
+echo ".env" >> .gitignore
+
+# Harden permissions (read/write for owner only)
+chmod 600 .env</code></pre>
+    </div>
+    <div id="step2-linux" class="os-panel">
+        <pre><code># Create directory
+mkdir -p ~/.config/ultra-lite-proxy
+cd ~/.config/ultra-lite-proxy
+
+# Create .env with your REAL key and optional model overrides
+cat > .env << 'EOF'
+OPENROUTER_API_KEY=sk-or-v1-...
+# Optional: override default models (uncomment and edit as needed)
+DEFAULT_MODEL=deepseek/deepseek-v4-pro
+# PLANNING_MODEL=deepseek/deepseek-v4-pro
+# BULK_MODEL=google/gemini-2.5-flash
+# RING_MODEL=inclusionai/ring-2.6-1t
+# VISION_MODEL=perceptron/perceptron-mk1
+EOF
+
+# Add .env to .gitignore
+echo ".env" >> .gitignore
+
+# Harden permissions (read/write for owner only)
+chmod 600 .env</code></pre>
+    </div>
+    <p>If <code>python</code> is not found, disable any Microsoft Store aliases (Windows) or ensure Python is in your PATH. On macOS/Linux, use <code>python3 --version</code> to verify the correct command.</p>
+    <p>Create a virtual environment and install dependencies:</p>
+
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step2b')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step2b')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step2b')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step2b-win" class="os-panel active">
+        <pre><code>python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install fastapi uvicorn httpx python-dotenv</code></pre>
+    </div>
+    <div id="step2b-mac" class="os-panel">
+        <pre><code>python3 -m venv venv
+source venv/bin/activate
+pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
+    </div>
+    <div id="step2b-linux" class="os-panel">
+        <pre><code>python3 -m venv venv
+source venv/bin/activate
+pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
+    </div>
+
+    <h2 id="step3">Step 3: The Unified Proxy (Battle-Tested, Production-Ready)</h2>
+    <p>Create <code>proxy.py</code> inside the folder with the following content. This version includes all fixes from real-world testing on Windows 11:</p>
+    <ul>
+        <li><strong>Safe message handling</strong> — extracts text without mutating Cline's message history (prevents corruption)</li>
+        <li><strong>Expanded connection pool</strong> — handles Cline's concurrent requests without socket drops</li>
+        <li><strong>Provider filtering</strong> — ignores flaky providers, retries on 502 errors</li>
+        <li><strong>Reasoning disabled on DeepSeek</strong> — prevents empty tool-call responses</li>
+        <li><strong>Full model list exposed</strong> — Cline sees all available models</li>
+        <li><strong>Prompt caching enabled</strong> — massive cost savings on repeated context</li>
+    </ul>
+
+    <pre><code>#!/usr/bin/env python3
+"""Unified OpenRouter Proxy — speed-optimized, privacy-first."""
+import os, json, httpx, asyncio, re
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
+if not OPENROUTER_KEY:
+    raise RuntimeError("CRITICAL: OPENROUTER_API_KEY missing from .env")
+
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "deepseek/deepseek-v4-pro")
+PLANNING_MODEL = os.getenv("PLANNING_MODEL", "deepseek/deepseek-v4-pro")
+BULK_MODEL = os.getenv("BULK_MODEL", "google/gemini-2.5-flash")
+RING_MODEL = os.getenv("RING_MODEL", "inclusionai/ring-2.6-1t")
+VISION_MODEL = os.getenv("VISION_MODEL", "perceptron/perceptron-mk1")
+V4_MODEL = os.getenv("V4_MODEL", "deepseek/deepseek-v4-flash")
+
+KEYWORD_MAP = {
+    "#pro": PLANNING_MODEL,
+    "#v4": V4_MODEL,
+    "#flash": BULK_MODEL,
+    "#ring": RING_MODEL,
+    "#vision": VISION_MODEL,
+    "#kimi": "moonshotai/kimi-k2.5",
+    "#dc": "deepseek/deepseek-chat",
+}
+
+REASONING_EFFORT = {"inclusionai/ring-2.6-1t": "high"}
+VISION_PARAMS = {"annotation_format": "box"}
+MODE_PREFIXES = {"ask": DEFAULT_MODEL, "plan": PLANNING_MODEL, "agent": DEFAULT_MODEL}
+
+MAX_RETRIES = 3
+RETRY_DELAYS = [1, 2, 4]
+_http_client = None
+
+def get_client():
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        _http_client = httpx.AsyncClient(
+            timeout=120,
+            limits=httpx.Limits(max_connections=100, max_keepalive_connections=20)
+        )
+    return _http_client
+
+app = FastAPI()
+
+def detect_routing(payload):
+    msgs = payload.get("messages", [])
+    if not msgs:
+        return DEFAULT_MODEL, payload
+
+    last = msgs[-1]
+    content = last.get("content", "")
+    text_to_scan = ""
+
+    # Extract text safely without mutating the message dictionary
+    if isinstance(content, list):
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text = block.get("text", "")
+                task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
+                text_to_scan = task_match.group(1).strip() if task_match else text
+                break
+    elif isinstance(content, str):
+        text_to_scan = content
+
+    # Check for prefix modifications
+    if text_to_scan:
+        for prefix, model in MODE_PREFIXES.items():
+            if text_to_scan.startswith(prefix + ":"):
+                return model, payload
+        for tag, model in KEYWORD_MAP.items():
+            if text_to_scan.startswith(tag):
+                return model, payload
+
+    # Image detection — only check the last message
+    if isinstance(content, list):
+        for part in content:
+            if isinstance(part, dict) and part.get("type") == "image_url":
+                return VISION_MODEL, payload
+
+    return DEFAULT_MODEL, payload
+
+async def call_openrouter(data: dict, request: Request):
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": os.getenv("OR_PROXY_REFERER", "https://github.com/your-username/ultra-lite-proxy"),
+        "X-Title": os.getenv("OR_PROXY_TITLE", "Ultra-Lite Proxy"),
+        "OpenRouter-Enable-Prompt-Caching": "true",
+    }
+
+    model = data.get("model", "")
+
+    if model in REASONING_EFFORT:
+        data["reasoning_effort"] = REASONING_EFFORT[model]
+    if model == VISION_MODEL and "annotation_format" not in data:
+        data.update(VISION_PARAMS)
+
+    if "provider" not in data:
+        data["provider"] = {"sort": "latency", "ignore": ["openai"]}
+
+    client = get_client()
+    last_exception = None
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            async with client.stream(
+                "POST", "https://openrouter.ai/api/v1/chat/completions",
+                json=data, headers=headers
+            ) as resp:
+                if resp.status_code in (429, 502) and attempt < MAX_RETRIES:
+                    await asyncio.sleep(RETRY_DELAYS[attempt])
+                    continue
+                if resp.status_code != 200:
+                    error_text = await resp.aread()
+                    error_data = {"error": f"OpenRouter error {resp.status_code}: {error_text.decode()}"}
+                    yield json.dumps(error_data).encode()
+                    return
+
+                async for chunk in resp.aiter_bytes():
+                    if await request.is_disconnected():
+                        break
+                    if chunk:
+                        yield chunk
+                return
+        except Exception as e:
+            last_exception = e
+            if attempt < MAX_RETRIES:
+                await asyncio.sleep(RETRY_DELAYS[attempt])
+                continue
+    error_data = {"error": f"Proxy error after {MAX_RETRIES} retries: {str(last_exception)}"}
+    yield json.dumps(error_data).encode()
+
+@app.post("/v1/chat/completions")
+async def chat(request: Request):
+    data = await request.json()
+    model, data = detect_routing(data)
+    data["model"] = model
+    print(f"→ Routed to: {model}")
+    stream_gen = call_openrouter(data, request)
+    return StreamingResponse(stream_gen, media_type="text/event-stream")
+
+@app.get("/v1/models")
+async def models():
+    return {
+        "object": "list",
+        "data": [{"id": m, "object": "model", "owned_by": "openrouter"} for m in KEYWORD_MAP.values()]
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)</code></pre>
+
+    <p>Start the proxy (make sure your venv is activated):</p>
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step3')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step3')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step3')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step3-win" class="os-panel active">
+        <pre><code>python proxy.py</code></pre>
+    </div>
+    <div id="step3-mac" class="os-panel">
+        <pre><code>python3 proxy.py</code></pre>
+    </div>
+    <div id="step3-linux" class="os-panel">
+        <pre><code>python3 proxy.py</code></pre>
+    </div>
+    <p>You'll see <code>Uvicorn running on http://127.0.0.1:8000</code>. Keep this terminal open. <strong>Tip:</strong> Run the proxy manually in its own terminal window — auto-start tasks can sometimes kill it mid-session.</p>
+
+    <h2 id="step4">Step 4: Auto-Start the Proxy (Global)</h2>
+    <p>To launch the proxy and docs server automatically when you open any project, create a user-level tasks file.</p>
+
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step4')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step4')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step4')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step4-win" class="os-panel active">
+        <p>In Cursor, press <code>Ctrl+Shift+P</code> → <strong>Tasks: Open User Tasks</strong>. If not found, create the file manually at <code>%APPDATA%\Cursor\User\tasks.json</code> and paste:</p>
+        <pre><code>{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start OpenRouter Proxy",
+      "type": "shell",
+      "command": "cd ${env:USERPROFILE}\\.config\\ultra-lite-proxy; .\\venv\\Scripts\\Activate.ps1; python proxy.py",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    },
+    {
+      "label": "Start Docs MCP Server",
+      "type": "shell",
+      "command": "npx @arabold/docs-mcp-server",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}</code></pre>
+    </div>
+    <div id="step4-mac" class="os-panel">
+        <p>In Cursor, press <code>Cmd+Shift+P</code> → <strong>Tasks: Open User Tasks</strong>. If not found, create the file manually at <code>~/Library/Application Support/Cursor/User/tasks.json</code> and paste:</p>
+        <pre><code>{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start OpenRouter Proxy",
+      "type": "shell",
+      "command": "cd ~/.config/ultra-lite-proxy && source venv/bin/activate && python3 proxy.py",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    },
+    {
+      "label": "Start Docs MCP Server",
+      "type": "shell",
+      "command": "npx @arabold/docs-mcp-server",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}</code></pre>
+    </div>
+    <div id="step4-linux" class="os-panel">
+        <p>In Cursor, press <code>Ctrl+Shift+P</code> → <strong>Tasks: Open User Tasks</strong>. If not found, create the file manually at <code>~/.config/Cursor/User/tasks.json</code> and paste:</p>
+        <pre><code>{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start OpenRouter Proxy",
+      "type": "shell",
+      "command": "cd ~/.config/ultra-lite-proxy && source venv/bin/activate && python3 proxy.py",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    },
+    {
+      "label": "Start Docs MCP Server",
+      "type": "shell",
+      "command": "npx @arabold/docs-mcp-server",
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}</code></pre>
+    </div>
+    <p>Now both the proxy and docs server will start silently whenever you fire up Cursor. <strong>Note:</strong> If the auto-start task kills the proxy mid-session, just run it manually in a standalone terminal — the tasks are best for initial launch, not long-running reliability.</p>
+
+    <h2 id="step5">Step 5: Install & Configure Cline</h2>
+    <p><em>Platform-independent — Cline config works the same on all OSes.</em></p>
+    <p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev" target="_blank">Cline extension</a> (<code>saoudrizwan.claude-dev</code>) in Cursor/VS Code.</p>
+    <p><strong>Cline settings</strong> (gear icon):</p>
+    <ul>
+        <li>API Provider: <code>OpenAI Compatible</code></li>
+        <li>Base URL: <code>http://127.0.0.1:8000/v1</code></li>
+        <li>API Key: <code>not-needed</code> (the proxy ignores it; must be non-empty)</li>
+        <li>Model ID: leave blank (proxy overrides)</li>
+    </ul>
+    <p><strong>Model Configuration</strong>:</p>
+    <ul>
+        <li>Context Window: <code>1048576</code></li>
+        <li>Supports Images: Yes</li>
+        <li>Browser: Yes</li>
+        <li>Prompt Caching: No (handled via proxy)</li>
+        <li>Input/Output Price: leave as 0</li>
+    </ul>
+    <p><strong>Feature Settings</strong>:</p>
+    <ul>
+        <li>Enable: Subagents, Native Tool Call, Parallel Tool Calling, Strict Plan Mode, Auto Compact, Focus Chain, Checkpoints, Cline Web Tools</li>
+        <li>Disable: Yolo Mode, Hooks (unless needed)</li>
+        <li>MCP Display Mode: Plain Text</li>
+    </ul>
+    <p><strong>Terminal Settings</strong>: Default profile — pick your OS default (<code>PowerShell</code> on Windows, <code>zsh</code> or <code>bash</code> on macOS/Linux), Terminal Execution Mode <code>VS Code Terminal</code>, Aggressive terminal reuse off.</p>
+    <p><strong>Browser Settings</strong>: Keep browser tool enabled. <strong>Uncheck</strong> "Use remote browser connection" (this would expose your real Chrome profile). After saving, in the "Available Tools" panel, set the browser tool to <strong>"Ask Every Time"</strong>.</p>
+
+    <h2 id="step6">Step 6: Install & Configure MCP Servers</h2>
+    <p>Globally install the MCP tools. Open a fresh terminal (not in venv):</p>
+    <pre><code>npm install -g @modelcontextprotocol/server-filesystem
+npm install -g @modelcontextprotocol/server-memory
+npm install -g @modelcontextprotocol/server-sequential-thinking
+npm install -g @hisma/server-puppeteer
+npm install -g gitingest-mcp
+npm install -g @arabold/docs-mcp-server</code></pre>
+    <p style="color:var(--muted); font-size:0.9rem;">
+        <strong>Note:</strong> On macOS/Linux, if you get permission errors, either use a Node version manager (like <code>nvm</code>) or prefix with <code>sudo</code> (but <code>nvm</code> is recommended to avoid permission issues).
+    </p>
+    <p>Cline's MCP settings must go into the correct file. In Cursor, press <code>Ctrl+Shift+P</code> (or <code>Cmd+Shift+P</code> on Mac) → <strong>Cline: Open MCP Settings</strong>.</p>
+    <p>If the command isn't available, manually create/edit the file at the path for your OS:</p>
+
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step6')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step6')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step6')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step6-win" class="os-panel active">
+        <p>Path: <code>%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json</code></p>
+    </div>
+    <div id="step6-mac" class="os-panel">
+        <p>Path: <code>~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json</code></p>
+    </div>
+    <div id="step6-linux" class="os-panel">
+        <p>Path: <code>~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json</code></p>
+    </div>
+
+    <p>Paste this configuration (adjust the filesystem path to your projects folder):</p>
+    <pre><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@hisma/server-puppeteer"]
+    },
+    "gitingest": {
+      "command": "npx",
+      "args": ["-y", "gitingest-mcp"]
+    },
+    "docs-mcp-server": {
+      "type": "sse",
+      "url": "http://localhost:6280/sse"
+    }
+  }
+}</code></pre>
+    <p><strong>Important:</strong> Replace <code>/path/to/your/projects</code> with your actual projects folder. Examples:</p>
+    <ul>
+        <li>Windows: <code>D:\\Code\\Source</code></li>
+        <li>macOS: <code>/Users/yourname/Projects</code></li>
+        <li>Linux: <code>/home/yourname/Projects</code></li>
+    </ul>
+    <p>The <code>docs-mcp-server</code> uses SSE and is already automated in the tasks.json shown in Step 4. Restart Cline after saving — all MCP indicators should turn green.</p>
+
+    <h2 id="step7">Step 7: House Rules & External AI Context</h2>
+    <p>This section covers two things: the <code>.clinerules</code> file that governs how Cline behaves inside your project, and a context block you can paste into <strong>external AI chats</strong> (DeepSeek Chat, ChatGPT, Claude, etc.) when you want to collaborate with them on your project.</p>
+
+    <h3>The Complete .clinerules File</h3>
+    <p>Drop this in your project root. It's the only per‑project file you'll ever need. This governs how Cline's AI models behave.</p>
+    <pre><code>- NEVER use the browser_action tool or any built-in browser. All web navigation, screenshots, and page interactions MUST be done through the Puppeteer MCP server (tools: puppeteer_navigate, puppeteer_screenshot, puppeteer_click, puppeteer_type, puppeteer_close, etc.).
+- When a task requires a browser, immediately call the appropriate Puppeteer MCP tool without asking which browser to use.
+
+# Project Guidelines for AI Assistants
+
+## General Conduct
+- Always ask for clarification if a request is ambiguous. Never assume.
+- Prefer simple, readable solutions over clever, complex ones.
+- Never add a new dependency without asking first.
+
+## Coding Standards
+- Write unit tests for all new public functions.
+- Prefer functional, declarative patterns over imperative ones.
+- Use meaningful variable and function names.
+
+## Workflow
+- For complex, multi-file changes, first use plan mode to outline the architecture.
+- After any file change, ensure the project still compiles and all existing tests pass.
+- After any database schema change, run `npx payload generate:types` and `npx tsc --noEmit`.
+- After any collection or global config change, update `scripts/seed.ts` to match.
+
+# Next.js & Clean Code Architecture Rules
+
+## Core Principles
+- **Empathy over Cleverness:** Write code that is easy to read and maintain for humans, not just machines.
+- **Keep it Simple:** Avoid over-engineering. Do not add abstractions before they are truly needed.
+
+## 1. Zero Hardcoded or Magic Values
+- **Constants:** Move all arbitrary strings, IDs, limits, configurations, and magic numbers into a central file.
+- **Enums & Objects:** Group related configuration values into `as const` objects or standard TypeScript enums.
+- **Env Variables:** Access all API routes, base domains, and public keys exclusively via `process.env`.
+- **No Inline Magic Numbers:** Never use raw numbers in logic calculations or conditionals.
+- **No Arbitrary Styling:** Avoid hardcoded Tailwind arbitrary values. Use global design tokens or theme scales.
+
+## 2. Directory Structure & Code Sharing
+- **Path Aliases:** Always use configured path aliases (`@/components/`, `@/utils/`) instead of relative paths.
+- `src/app/`: File-system routing, layouts, and page entry-points only.
+- `src/components/`: Reusable, isolated presentation components.
+- `src/helpers/` or `src/utils/`: Pure functions with single, isolated responsibilities.
+- `src/services/`: Centralised data-fetching layer, API callers, and third-party wrappers.
+- `src/hooks/`: Reusable custom React hooks.
+
+## 3. SOLID & Clean Code Rules
+- **Single Responsibility (SRP):** One file, one job.
+- **Open/Closed (OCP):** Build components to handle variations using React composition (`children` prop).
+- **Dependency Inversion (DIP):** Pass callback behaviors as props instead of embedding logic.
+- **Function Length:** Keep methods under 25 lines.
+
+## 4. Next.js & TypeScript Standards
+- **Server-First:** Default to React Server Components. `'use client'` only at the lowest node possible.
+- **Strict Typing:** Never use `any`. Define clear, strict `interface` properties.
+- **Data Fetching:** Isolate error bounds with clean `try/catch` and Next.js `error.tsx` boundaries.</code></pre>
+
+    <h3>External AI Context Block</h3>
+    <p><strong>This is for external AI chats</strong> — when you're talking to DeepSeek Chat, ChatGPT, Claude, or any other AI outside of Cline and want them to understand your development setup. Paste this at the start of any external chat conversation:</p>
+    <pre><code>I'm coding in Cursor (free) with the Cline extension connected to a local proxy 
+(127.0.0.1:8000) that routes all requests to OpenRouter. My default model is 
+DeepSeek V4 Pro. I have multiple models available, selectable by prefix:
+
+- Default (no prefix) → DeepSeek V4 Pro (workhorse, handles all tool calls)
+- plan: → DeepSeek V4 Pro (architecture/planning, Plan mode, read-only)
+- ask: → DeepSeek V4 Pro (questions without editing files)
+- agent: → DeepSeek V4 Pro (explicit Act mode, same as default)
+- #flash → Gemini 2.5 Flash (cheap bulk edits, simple tasks)
+- #kimi → Kimi K2.5 (best tool-calling reliability, critical multi-step tasks)
+- #dc → DeepSeek Chat (cheap alternative for simple read-only prompts)
+- #vision → Perceptron Mk1 (screenshots; always use Puppeteer MCP)
+- #ring → Ring 2.6 1T (deep reasoning, NO tool calls)
+
+My MCP servers (always available — I will tell you which ones to use per task):
+
+FILESYSTEM: Direct read/write access to my projects folder.
+  Use for: reading/editing any project files, exploring directory structure.
+  Skip for: pure reasoning tasks, general questions, web research.
+
+MEMORY: Persistent knowledge across sessions.
+  Use for: tasks where you need to remember preferences, patterns, or decisions
+           across multiple sessions.
+  Skip for: one-off tasks, simple edits, general questions.
+
+SEQUENTIAL-THINKING: Structured reasoning for complex problems.
+  Use for: multi-step debugging, architecture decisions, complex algorithms.
+  Skip for: simple questions, straightforward edits, routine tasks.
+
+PUPPETEER: Headless browser for screenshots and web navigation.
+  Use for: capturing page screenshots, testing UI changes, checking responsive
+           design, any task where I mention "screenshot" or "check the page".
+  Always use explicit tool names: puppeteer_navigate, puppeteer_screenshot.
+  Skip for: pure code edits, backend work, general questions.
+  NEVER use the built-in browser_action tool — always Puppeteer MCP.
+
+GITINGEST: GitHub repo analysis.
+  Use for: analysing a GitHub repository, understanding a codebase structure,
+           when I paste a GitHub URL and ask you to review it.
+  Skip for: local project work, general questions, web research.
+
+DOCS-MCP-SERVER: Local library documentation fetcher (always running in background).
+  Use for: looking up API docs, checking library syntax, verifying method signatures.
+  Skip for: questions about my own code (use filesystem), general knowledge.
+
+When I start a task, I will tell you explicitly which MCP tools to use. For example:
+- "Use Puppeteer to screenshot the homepage" → enable PUPPETEER
+- "Analyse this repo: https://github.com/user/repo" → enable GITINGEST
+- "This is a backend-only task, no browser needed" → skip PUPPETEER
+- "Just a quick question" → skip all MCP tools, use only the default model
+
+If I don't specify, only use FILESYSTEM by default. Ask me if you think another
+tool would help, but don't enable it until I confirm.
+
+Context window: 1M tokens. Prompt caching enabled. OpenRouter ~£4-8/month typical cost.
+Built and tested on Windows 11.</code></pre>
+
+    <h2 id="step8">Step 8: Verifying Everything Works</h2>
+    <p><em>Platform-independent tests — run these in Cline regardless of your OS.</em></p>
+    <ol>
+        <li><strong>Proxy test:</strong> Open <a href="http://127.0.0.1:8000/docs" target="_blank">http://127.0.0.1:8000/docs</a> in your browser — you should see FastAPI interactive docs.</li>
+        <li><strong>Cline test:</strong> Type <code>#flash Hello, world!</code> — you should see a Gemini Flash reply.</li>
+        <li><strong>Default routing:</strong> Just type "What is the current date and time?" — DeepSeek V4 Pro responds.</li>
+        <li><strong>Plan mode:</strong> <code>plan: design a caching layer</code> — DeepSeek V4 Pro in Plan mode.</li>
+        <li><strong>Vision:</strong> <code>#vision Use puppeteer_navigate to go to https://example.com, then puppeteer_screenshot, and describe the result</code> — Puppeteer MCP kicks in, screenshot returns cleanly.</li>
+        <li><strong>Browser safety:</strong> Verify that <code>.clinerules</code> prevents the built-in browser from opening.</li>
+    </ol>
+
+    <div class="cheatsheet-box" id="cheatsheet">
+        <h3 style="margin-top:0;">⚡ Quick Reference Cheatsheet</h3>
+        <p><em>Note: <code>agent:</code> is the default behavior (DeepSeek V4 Pro with tools); use it to be explicit. Just typing normally gives you the same result.</em></p>
+        <table>
+            <thead><tr><th>Prompt Example</th><th>What Happens</th></tr></thead>
+            <tbody>
+            <tr><td><code>plan: design a new auth flow</code></td><td>DeepSeek V4 Pro, Plan mode (read-only)</td></tr>
+            <tr><td><code>agent: add Stripe checkout</code></td><td>DeepSeek V4 Pro executes with full tool use (same as default)</td></tr>
+            <tr><td><code>ask: how does JWT refresh work?</code></td><td>DeepSeek V4 Pro answers without editing files</td></tr>
+            <tr><td><code>#flash rename getCwd to currentWorkingDirectory</code></td><td>Gemini 2.5 Flash bulk edit</td></tr>
+            <tr><td><code>#kimi Fix this critical race condition in the auth flow</code></td><td>Kimi K2.5 — perfect tool-calling for critical tasks</td></tr>
+            <tr><td><code>#ring debug this recursive function</code></td><td>Ring 2.6 1T deep reasoning (no tool calls!)</td></tr>
+            <tr><td><code>#vision Use puppeteer_navigate… then puppeteer_screenshot… describe</code></td><td>Perceptron Mk1 vision with Puppeteer</td></tr>
+            <tr><td><code>#dc What does git status do?</code></td><td>DeepSeek Chat — cheap, simple prompts only</td></tr>
+            <tr><td>Just type a coding request</td><td>DeepSeek V4 Pro, the reliable daily driver</td></tr>
+            </tbody>
+        </table>
+        <h3 style="margin-top:1.5rem;">🛠️ MCP Tool Quick Reference</h3>
+        <table>
+            <thead><tr><th>You want to…</th><th>Add to your prompt</th></tr></thead>
+            <tbody>
+            <tr><td>Screenshot a page</td><td><code>Use puppeteer_navigate to [URL], then puppeteer_screenshot</code></td></tr>
+            <tr><td>Analyse a GitHub repo</td><td><code>Use gitingest to analyse [repo URL]</code></td></tr>
+            <tr><td>Fetch library docs</td><td>Just ask — docs-mcp-server auto‑responds</td></tr>
+            <tr><td>Skip browser tools</td><td><code>This task does NOT need browser tools</code></td></tr>
+            <tr><td>Skip repo analysis</td><td><code>This task does NOT need gitingest</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 id="step9">Step 9: One‑Stop Stack Maintenance</h2>
+    <p>Run this weekly health‑check script to keep your Python packages, global npm tools, and models fresh. <strong>Save both scripts below inside your <code>ultra-lite-proxy</code> folder — they work together.</strong></p>
+
+    <div class="os-tabs">
+        <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step9')">🪟 Windows (tested)</button>
+        <button class="os-tab" onclick="switchOS(event, 'mac', 'step9')">🍎 macOS (courtesy)</button>
+        <button class="os-tab" onclick="switchOS(event, 'linux', 'step9')">🐧 Linux (courtesy)</button>
+    </div>
+    <div id="step9-win" class="os-panel active">
+        <p>Save as <code>update-stack.ps1</code>:</p>
+        <pre><code># update-stack.ps1 — quick health check for your AI coding stack
+$ErrorActionPreference = "Stop"
+Set-Location $env:USERPROFILE\.config\ultra-lite-proxy
+
+Write-Host "=== 1/4  Python dependencies (proxy) ==="
+. .\venv\Scripts\Activate.ps1
+pip list --outdated
+deactivate
+
+Write-Host "`n=== 2/4  Global MCP server packages ==="
+npm outdated -g
+
+Write-Host "`n=== 3/4  OpenRouter model availability ==="
+if (Test-Path .\check_models.ps1) {
+    .\check_models.ps1
+} else {
+    Write-Host "check_models.ps1 not found — save the watcher snippet below as a separate file."
+}
+
+Write-Host "`n=== 4/4  Cursor & Cline ==="
+Write-Host "Cursor changelog: https://cursor.sh/changelog"
+Write-Host "Cline releases:    https://github.com/cline/cline/releases"</code></pre>
+        <p>Run it from PowerShell: <code>cd $env:USERPROFILE\.config\ultra-lite-proxy ; .\update-stack.ps1</code></p>
+    </div>
+    <div id="step9-mac" class="os-panel">
+        <p>Save as <code>update-stack.sh</code>, then make it executable with <code>chmod +x update-stack.sh</code>:</p>
+        <pre><code>#!/bin/bash
+# update-stack.sh — quick health check for your AI coding stack
+set -e
+
+cd ~/.config/ultra-lite-proxy
+
+echo "=== 1/4  Python dependencies (proxy) ==="
+source venv/bin/activate
+pip list --outdated
+deactivate 2>/dev/null
+
+echo ""
+echo "=== 2/4  Global MCP server packages ==="
+npm outdated -g 2>/dev/null || echo "(nothing outdated or npm check unavailable)"
+
+echo ""
+echo "=== 3/4  OpenRouter model availability ==="
+if [ -f ./check_models.sh ]; then
+    ./check_models.sh
+else
+    echo "check_models.sh not found — save the watcher snippet below as a separate file."
+fi
+
+echo ""
+echo "=== 4/4  Cursor & Cline ==="
+echo "Cursor changelog: https://cursor.sh/changelog"
+echo "Cline releases:    https://github.com/cline/cline/releases"</code></pre>
+        <p>Run it: <code>cd ~/.config/ultra-lite-proxy && ./update-stack.sh</code></p>
+    </div>
+    <div id="step9-linux" class="os-panel">
+        <p>Save as <code>update-stack.sh</code>, then make it executable with <code>chmod +x update-stack.sh</code>:</p>
+        <pre><code>#!/bin/bash
+# update-stack.sh — quick health check for your AI coding stack
+set -e
+
+cd ~/.config/ultra-lite-proxy
+
+echo "=== 1/4  Python dependencies (proxy) ==="
+source venv/bin/activate
+pip list --outdated
+deactivate 2>/dev/null
+
+echo ""
+echo "=== 2/4  Global MCP server packages ==="
+npm outdated -g 2>/dev/null || echo "(nothing outdated or npm check unavailable)"
+
+echo ""
+echo "=== 3/4  OpenRouter model availability ==="
+if [ -f ./check_models.sh ]; then
+    ./check_models.sh
+else
+    echo "check_models.sh not found — save the watcher snippet below as a separate file."
+fi
+
+echo ""
+echo "=== 4/4  Cursor & Cline ==="
+echo "Cursor changelog: https://cursor.sh/changelog"
+echo "Cline releases:    https://github.com/cline/cline/releases"</code></pre>
+        <p>Run it: <code>cd ~/.config/ultra-lite-proxy && ./update-stack.sh</code></p>
+    </div>
+
+    <details class="inline-script">
+        <summary>🔎 The check_models watcher (save as a separate file alongside update-stack)</summary>
+        <p>This script checks whether each of your configured models still exists on OpenRouter.</p>
+        <div class="os-tabs">
+            <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'check_models')">🪟 Windows (tested)</button>
+            <button class="os-tab" onclick="switchOS(event, 'mac', 'check_models')">🍎 macOS (courtesy)</button>
+            <button class="os-tab" onclick="switchOS(event, 'linux', 'check_models')">🐧 Linux (courtesy)</button>
+        </div>
+        <div id="check_models-win" class="os-panel active">
+            <pre><code># check_models.ps1
+$catalog = Invoke-RestMethod -Uri https://openrouter.ai/api/v1/models
+$currentIds = $catalog.data.id
+$myModels = @(
+    "deepseek/deepseek-v4-pro",
+    "google/gemini-2.5-flash",
+    "inclusionai/ring-2.6-1t",
+    "perceptron/perceptron-mk1",
+    "moonshotai/kimi-k2.5"
+)
+$missing = $myModels | Where-Object { $_ -notin $currentIds }
+if ($missing) {
+    Write-Host "⚠️  MISSING MODELS:" -ForegroundColor Yellow
+    $missing | ForEach-Object { Write-Host "  - $_" }
+} else {
+    Write-Host "✅ All models still available" -ForegroundColor Green
+}</code></pre>
+        </div>
+        <div id="check_models-mac" class="os-panel">
+            <pre><code>#!/bin/bash
+# check_models.sh
+CATALOG=$(curl -s https://openrouter.ai/api/v1/models)
+MODELS=("deepseek/deepseek-v4-pro" "google/gemini-2.5-flash" "inclusionai/ring-2.6-1t" "perceptron/perceptron-mk1" "moonshotai/kimi-k2.5")
+MISSING=()
+for model in "${MODELS[@]}"; do
+    if ! echo "$CATALOG" | grep -q "\"id\": *\"$model\""; then
+        MISSING+=("$model")
+    fi
+done
+if [ ${#MISSING[@]} -eq 0 ]; then
+    echo "✅ All models still available"
+else
+    echo "⚠️  MISSING MODELS:"
+    printf '  - %s\n' "${MISSING[@]}"
+fi</code></pre>
+        <p style="color:var(--muted); font-size:0.85rem;">Make it executable: <code>chmod +x check_models.sh</code></p>
+        </div>
+        <div id="check_models-linux" class="os-panel">
+            <pre><code>#!/bin/bash
+# check_models.sh
+CATALOG=$(curl -s https://openrouter.ai/api/v1/models)
+MODELS=("deepseek/deepseek-v4-pro" "google/gemini-2.5-flash" "inclusionai/ring-2.6-1t" "perceptron/perceptron-mk1" "moonshotai/kimi-k2.5")
+MISSING=()
+for model in "${MODELS[@]}"; do
+    if ! echo "$CATALOG" | grep -q "\"id\": *\"$model\""; then
+        MISSING+=("$model")
+    fi
+done
+if [ ${#MISSING[@]} -eq 0 ]; then
+    echo "✅ All models still available"
+else
+    echo "⚠️  MISSING MODELS:"
+    printf '  - %s\n' "${MISSING[@]}"
+fi</code></pre>
+        <p style="color:var(--muted); font-size:0.85rem;">Make it executable: <code>chmod +x check_models.sh</code></p>
+        </div>
+    </details>
+
+    <h3>What to Do After Running the Script</h3>
+    <table>
+        <thead><tr><th>If you see…</th><th>Action</th></tr></thead>
+        <tbody>
+        <tr><td>Python packages outdated</td><td><code>pip install --upgrade fastapi uvicorn httpx python-dotenv</code> (inside venv)</td></tr>
+        <tr><td>Global npm packages outdated</td><td><code>npm update -g</code> (review changelogs first if you're cautious)</td></tr>
+        <tr><td>Model missing (from <code>check_models</code>)</td><td>Edit <code>.env</code> with the new model ID, restart proxy. Done.</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="troubleshooting">Troubleshooting & Lessons Learned</h2>
+    <p>These are the real issues encountered and fixed during weeks of production use on Windows 11:</p>
+    <table>
+        <thead><tr><th>Problem</th><th>Root Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+        <tr><td>Model routes to wrong model</td><td>Cline wraps messages in list blocks with <code>&lt;task&gt;</code> tags</td><td>Updated <code>detect_routing</code> to extract text from list content safely</td></tr>
+        <tr><td>Empty tool-call responses</td><td><code>reasoning_effort: "high"</code> on DeepSeek V4 Pro caused empty streams</td><td>Disabled reasoning on DeepSeek; only Ring uses it now</td></tr>
+        <tr><td>Proxy crashes mid-task</td><td>Auto-start task runner kills and reuses terminal</td><td>Run proxy manually in standalone terminal for long sessions</td></tr>
+        <tr><td>502 / "Connection error"</td><td>OpenRouter routed to flaky OpenAI provider</td><td>Added <code>"ignore": ["openai"]</code> to provider filter; retry on 502</td></tr>
+        <tr><td>Images trigger wrong model</td><td>Image detection scanned entire message history</td><td>Now only checks the last message for images</td></tr>
+        <tr><td>Built-in browser opens instead of Puppeteer</td><td>Cline bug #5947 bypasses "Disable browser" setting</td><td><code>.clinerules</code> rule + explicit MCP tool naming in prompts</td></tr>
+        <tr><td>Kimi K2.5 cost too high</td><td>Was default for all tool-call follow-ups (800+ requests/week)</td><td>Switched default to DeepSeek V4 Pro; Kimi reserved for <code>#kimi</code></td></tr>
+        <tr><td>Connection pool starvation</td><td><code>max_keepalive_connections=1</code> too restrictive</td><td>Raised to 20 connections, 100 max</td></tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <div class="callout">
+        <strong>You now have a multi-model AI coding assistant that rivals Cursor Ultra's AI engine — for the price of a coffee each month.</strong> It's private, battle-tested on Windows 11, and entirely under your control. No training on your code, no surprise bills — this is AI-assisted development that respects your wallet and your privacy.<br><br>
+        <strong>Real results:</strong> A complete Next.js site with Payload CMS, admin panel, and full documentation — built for <strong>£14.72</strong>. Typical developers will pay <strong>£4–8/month</strong>. Cursor Ultra: £160/month.
+    </div>
+
+    <p style="text-align:center; margin-top:2rem;">
+        <a href="https://openrouter.ai" target="_blank"><strong>OpenRouter</strong></a> ·
+        <a href="https://cursor.com" target="_blank"><strong>Cursor</strong></a> ·
+        <a href="https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev" target="_blank"><strong>Cline</strong></a> ·
+        <a href="https://python.org" target="_blank"><strong>Python</strong></a> ·
+        <a href="https://nodejs.org" target="_blank"><strong>Node.js</strong></a>
+    </p>
+</div>
+
+<script>
+function switchOS(event, os, section) {
+    const tabs = event.target.parentElement.querySelectorAll('.os-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    const panels = document.querySelectorAll(`[id^="${section}-"]`);
+    panels.forEach(panel => panel.classList.remove('active'));
+    const target = document.getElementById(`${section}-${os}`);
+    if (target) target.classList.add('active');
+}
+</script>
+</body>
+</html>
