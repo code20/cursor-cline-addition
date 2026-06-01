@@ -10,9 +10,20 @@ A complete guide to building your own multi-model AI coding assistant that runs 
 
 ## 🚀 TL;DR
 
-I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It gives you access to DeepSeek, Kimi, Gemini, and more — all switchable by hashtag — with full privacy and a hard spending cap. This repo contains the complete step-by-step guide, tested with a real production app.
+I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It uses the **LLM Gateway pattern** — the same architecture as enterprise tools like [LiteLLM](https://www.litellm.ai/ai-gateway) — but in a single Python script you can set up in 10 minutes. DeepSeek, Kimi, Gemini, Perceptron — all switchable by hashtag, with full privacy and a hard spending cap.
 
 **⚠️ Built and tested on Windows 11.** macOS and Linux instructions are provided as a courtesy.
+
+---
+
+## 🧠 What You're Building
+
+This isn't just a proxy — it's a **self-built LLM Gateway** that:
+- Routes requests to multiple AI models based on hashtags and prefixes
+- Controls costs with OpenRouter's prepaid system (no surprise bills)
+- Handles retries, provider filtering, and prompt caching
+- Keeps your API keys secure on your machine
+- Works with Cline for agentic coding (file editing, terminal commands, browser screenshots)
 
 ---
 
@@ -39,28 +50,27 @@ I built a multi-model AI coding assistant that costs **£4–8/month** for typic
 
 ---
 
-## 🛠️ What You'll Build
+## 🛠️ What's Included
 
-- A local proxy that routes requests to OpenRouter with hashtag-based model switching
+- A local proxy (~200 lines of Python) that routes requests to OpenRouter with hashtag-based model switching
 - MCP servers for filesystem access, memory, browser screenshots, GitHub analysis, and documentation
 - A production-ready `.clinerules` file for code quality and browser safety
 - Maintenance scripts to keep everything fresh
 - An AI context block you can paste into DeepSeek Chat, ChatGPT, or Claude
+- Real-world cost data from building a complete Next.js + Payload CMS app
 
 ---
 
 ## 📖 Read the Full Guide
 
-The complete step-by-step guide is available in the blog:
-
-👉 **[View the Blog](https://github.com/yourusername/cursor-cline-addition/blob/main/blog.html)** (download and open in your browser)
+👉 **[View the Blog](https://code20.github.io/cursor-cline-addition/)**
 
 It covers:
 - Setting up OpenRouter with hard spending caps and privacy guardrails
-- Building the proxy with all production fixes (message handling, connection pooling, provider filtering)
+- Building the LLM Gateway proxy with all production fixes
 - Installing and configuring Cline with MCP servers
 - The complete `.clinerules` file for browser safety and code quality
-- Real-world cost data from building a complete Next.js + Payload CMS app
+- Real-world cost data: £14.72 for a full production month
 - Troubleshooting every bug encountered and fixed
 
 ---
@@ -84,5 +94,5 @@ pip install fastapi uvicorn httpx python-dotenv
 # 4. Install MCP servers
 npm install -g @modelcontextprotocol/server-filesystem @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking @hisma/server-puppeteer gitingest-mcp @arabold/docs-mcp-server
 
-# 5. Download proxy.py from this repo and start it
+# 5. Download proxy.py from the repo and start it
 python proxy.py
