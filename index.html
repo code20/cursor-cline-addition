@@ -611,12 +611,12 @@ def detect_routing(payload):
     text_to_scan = ""
 
     # Extract text safely without mutating the message dictionary
-    # v2.1 — cache bust
     if isinstance(content, list):
         for block in content:
             if isinstance(block, dict) and block.get("type") == "text":
                 text = block.get("text", "")
-                task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
+                
+        task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
                 text_to_scan = task_match.group(1).strip() if task_match else text
                 break
     elif isinstance(content, str):
