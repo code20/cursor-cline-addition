@@ -19,6 +19,7 @@ I built a multi-model AI coding assistant that costs **£4–8/month** for typic
 ## 🧠 What You're Building
 
 This isn't just a proxy — it's a **self-built LLM Gateway** that:
+
 - Routes requests to multiple AI models based on hashtags and prefixes
 - Controls costs with OpenRouter's prepaid system (no surprise bills)
 - Handles retries, provider filtering, and prompt caching
@@ -29,24 +30,24 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
 ## 💰 What You'll Pay
 
-| User Type | Monthly Cost | vs. Cursor Ultra |
-|-----------|:-----------:|:----------------:|
-| Casual | £2–4 | Saves £196/month |
-| Typical Developer | **£4–8** | Saves £192/month |
-| Power User | £12–16 | Saves £184/month |
+| User Type         | Monthly Cost | vs. Cursor Ultra |
+| ----------------- | :----------: | :--------------: |
+| Casual            |     £2–4     | Saves £196/month |
+| Typical Developer |   **£4–8**   | Saves £192/month |
+| Power User        |    £12–16    | Saves £184/month |
 
 ---
 
 ## 🧠 Models at Your Fingertips
 
-| Model | Use via | Best for |
-|-------|---------|----------|
-| DeepSeek V4 Pro | Default | Everyday workhorse |
-| Gemini 2.5 Flash | `#flash` | Cheap bulk edits |
-| Kimi K2.5 | `#kimi` | Critical multi-step tasks |
-| Perceptron Mk1 | `#vision` | Screenshots & UI analysis |
-| DeepSeek Chat | `#dc` | Simple prompts on a budget |
-| Ring 2.6 1T | `#ring` | Deep reasoning (no tools) |
+| Model            | Use via   | Best for                   |
+| ---------------- | --------- | -------------------------- |
+| DeepSeek V4 Pro  | Default   | Everyday workhorse         |
+| Gemini 2.5 Flash | `#flash`  | Cheap bulk edits           |
+| Kimi K2.5        | `#kimi`   | Critical multi-step tasks  |
+| Perceptron Mk1   | `#vision` | Screenshots & UI analysis  |
+| DeepSeek Chat    | `#dc`     | Simple prompts on a budget |
+| Ring 2.6 1T      | `#ring`   | Deep reasoning (no tools)  |
 
 ---
 
@@ -58,6 +59,7 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 - Maintenance scripts to keep everything fresh
 - An AI context block you can paste into DeepSeek Chat, ChatGPT, or Claude
 - Real-world cost data from building a complete Next.js + Payload CMS app
+- All code available as standalone files: `proxy.py`, `update-stack.ps1`, `check_models.ps1`
 
 ---
 
@@ -66,6 +68,7 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 👉 **[View the Blog](https://code20.github.io/cursor-cline-addition/)**
 
 It covers:
+
 - Setting up OpenRouter with hard spending caps and privacy guardrails
 - Building the LLM Gateway proxy with all production fixes
 - Installing and configuring Cline with MCP servers
@@ -94,5 +97,68 @@ pip install fastapi uvicorn httpx python-dotenv
 # 4. Install MCP servers
 npm install -g @modelcontextprotocol/server-filesystem @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking @hisma/server-puppeteer gitingest-mcp @arabold/docs-mcp-server
 
-# 5. Download proxy.py from the repo and start it
+# 5. Download the scripts from this repo into the folder:
+#    - proxy.py
+#    - update-stack.ps1
+#    - check_models.ps1
+
+# 6. Start the proxy
 python proxy.py
+```
+
+Then read the blog for Cline configuration, `.clinerules`, and MCP setup.
+
+---
+
+## 📊 Real-World Test
+
+This setup was battle-tested by building a complete production app:
+
+- **Car-hire website** with Next.js 15 + Payload CMS 3
+- **Admin panel** with 2FA, custom avatars, and rich content editing
+- **Full documentation** (README, developer reference, owner guide)
+- **81.5M tokens**, 2,000 requests, **$18.40 total** for the month
+
+---
+
+## 🤝 Who This Is For
+
+- Developers who want powerful AI coding tools without a £160/month subscription
+- Hobbyists and learners building side projects on a budget
+- Anyone tired of vendor lock-in and wanting full privacy control
+- Windows users who want a tested, working setup (Mac/Linux instructions included as courtesy)
+
+---
+
+## 🏗️ Architecture
+
+This project follows the **LLM Gateway Pattern** — the same architecture used by [LiteLLM](https://www.litellm.ai/ai-gateway) and other enterprise AI infrastructure tools. Instead of connecting directly to each AI provider, all requests go through a single proxy that handles routing, cost control, error recovery, and API key security.
+
+---
+
+## 📁 Files in This Repo
+
+| File               | Purpose                                |
+| ------------------ | -------------------------------------- |
+| `index.html`       | The complete blog guide                |
+| `proxy.py`         | The LLM Gateway proxy script           |
+| `update-stack.ps1` | Weekly maintenance/health-check script |
+| `check_models.ps1` | Model availability watcher             |
+| `README.md`        | You're reading it                      |
+| `LICENSE`          | MIT                                    |
+
+---
+
+## 📝 License
+
+MIT — use it, modify it, share it. Just keep building cool stuff.
+
+---
+
+## 🔗 Links
+
+- [OpenRouter](https://openrouter.ai) — API access to 400+ models
+- [Cursor](https://cursor.com) — Free AI code editor
+- [Cline](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev) — Agentic coding extension
+- [LiteLLM](https://www.litellm.ai/ai-gateway) — The enterprise LLM Gateway (what you're building, but simpler)
+- [Full Blog Guide](https://code20.github.io/cursor-cline-addition/)
