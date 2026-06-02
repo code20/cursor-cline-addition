@@ -614,9 +614,8 @@ def detect_routing(payload):
     if isinstance(content, list):
         for block in content:
             if isinstance(block, dict) and block.get("type") == "text":
-                text = block.get("text", "")
-                
-        task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
+                text = block.get("text", "")        
+                task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
                 text_to_scan = task_match.group(1).strip() if task_match else text
                 break
     elif isinstance(content, str):
