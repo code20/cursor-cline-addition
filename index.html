@@ -544,7 +544,7 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
     <h2 id="step3">Step 3: The Unified Proxy (Battle-Tested, Production-Ready)</h2>
     <p>Create <code>proxy.py</code> inside the folder with the following content. This version includes all fixes from real-world testing on Windows 11. <strong>All model IDs can be overridden in <code>.env</code></strong> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy. No Python editing needed.</p>
     <ul>
-        <li><strong>Safe message handling</strong> — extracts text without mutating Cline's message history (prevents corruption)</li>
+        <li><strong>Safe message handling</strong> — extracts text without mutating Cline's message history (prevents corruption, correct regex with &lt;task&gt; tags)</li>
         <li><strong>Expanded connection pool</strong> — handles Cline's concurrent requests without socket drops</li>
         <li><strong>Provider filtering</strong> — ignores flaky providers, retries on 502 errors</li>
         <li><strong>Reasoning disabled on DeepSeek</strong> — prevents empty tool-call responses</li>
