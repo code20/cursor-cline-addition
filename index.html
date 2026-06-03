@@ -752,7 +752,7 @@ npm install -g @arabold/docs-mcp-server</code></pre>
     <p><em>Cline handles the coding. But for brainstorming, reviewing feedback, or weighing trade-offs, I still use external AI chats. The context block below gives them everything they need to understand my setup.</em></p>
 
     <h3>The Complete .clinerules File</h3>
-    <p>Drop this in your project root. It's the only per‑project file you'll ever need. This governs how Cline's AI models behave.</p>
+    <p>Drop this in your project root. It's the only per‑project file you'll ever need. This governs how Cline's AI models behave. <strong>Tweak it for your own stack</strong> — the Payload CMS and Next.js rules are specific to my project. The browser safety rules and coding standards are universal.</p>
     <pre><code>- NEVER use the browser_action tool or any built-in browser. All web navigation, screenshots, and page interactions MUST be done through the Puppeteer MCP server (tools: puppeteer_navigate, puppeteer_screenshot, puppeteer_click, puppeteer_type, puppeteer_close, etc.).
 - When a task requires a browser, immediately call the appropriate Puppeteer MCP tool without asking which browser to use.
 
