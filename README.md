@@ -24,7 +24,7 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 - Controls costs with OpenRouter's prepaid system (no surprise bills)
 - Handles retries, provider filtering, and prompt caching
 - Keeps your API keys secure on your machine
-- Works with Cline for agentic coding (file editing, terminal commands, browser screenshots)
+- Works with Cline for agentic coding (file editing, terminal commands)
 
 ---
 
@@ -54,7 +54,7 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 ## 🛠️ What's Included
 
 - A local proxy (~200 lines of Python) that routes requests to OpenRouter with hashtag-based model switching
-- MCP servers for filesystem access, memory, browser screenshots, GitHub analysis, and documentation
+- MCP servers for filesystem access, memory, and documentation (kept minimal to control token costs)
 - A production-ready `.clinerules` file for code quality and browser safety
 - Maintenance scripts to keep everything fresh
 - An AI context block you can paste into DeepSeek Chat, ChatGPT, or Claude
@@ -95,7 +95,7 @@ python -m venv venv
 pip install fastapi uvicorn httpx python-dotenv
 
 # 4. Install MCP servers
-npm install -g @modelcontextprotocol/server-filesystem @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking @hisma/server-puppeteer gitingest-mcp @arabold/docs-mcp-server
+npm install -g @modelcontextprotocol/server-filesystem @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking @arabold/docs-mcp-server
 
 # 5. Download the scripts from this repo into the folder:
 #    - proxy.py
