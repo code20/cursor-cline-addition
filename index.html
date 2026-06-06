@@ -139,8 +139,8 @@
         }
         .badge.green { background: #064e3b; color: #6ee7b7; }
         .badge.red { background: #7f1d1d; color: #fca5a5; }
-        .badge.orange { background: #5c2d00; color: #fbbf24; }
         .badge.blue { background: #1e3a5f; color: #93c5fd; }
+        .badge.orange { background: #5c2d00; color: #fbbf24; }
         .callout {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             border-left: 4px solid var(--accent);
@@ -268,6 +268,7 @@
 </head>
 <body>
 <div class="container">
+    <p style="color:var(--muted); font-size:0.8rem; text-align:center; margin-bottom:0;">Version 2.2 — June 2026 · by <a href="https://github.com/code20">@code20</a></p>
     <h1>Cursor Cline Addition</h1>
     <p class="subtitle">I Built a Cursor Ultra Alternative for £4–8/Month — 2026 OpenRouter Guide</p>
 
@@ -299,6 +300,7 @@
             <li><a href="#step1">Step 1: OpenRouter Account Setup</a></li>
             <li><a href="#step2">Step 2: Project Directory & Environment</a></li>
             <li><a href="#step3">Step 3: The Unified Proxy</a></li>
+            <li><a href="#own-models">Using Your Own Models (Optional)</a></li>
             <li><a href="#step4">Step 4: Auto-Start the Proxy</a></li>
             <li><a href="#step5">Step 5: Install & Configure Cline</a></li>
             <li><a href="#step6">Step 6: MCP Servers</a></li>
@@ -314,7 +316,7 @@
     <p>This isn't a "$20/month subscription" guide. That's what a <em>power user</em> building an entire production CMS with admin panel and documentation paid in a heavy month. Here's what <strong>you</strong> — the everyday developer — can expect:</p>
 
     <table>
-        <thead><tr><th>User Type</th><th>Monthly Tokens</th><th>Monthly Cost</th><th>vs. Cursor Ultra ($200)</th></tr></thead>
+        <thead><tr><th>User Type</th><th>Monthly Tokens</th><th>Monthly Cost</th><th>vs. Cursor Ultra (£160)</th></tr></thead>
         <tbody>
         <tr><td><span class="badge green">Casual</span></td><td>5–15M</td><td><strong>£2–4</strong></td><td>Saves £196/month</td></tr>
         <tr><td><span class="badge blue">Typical Developer</span></td><td>20–40M</td><td><strong>£4–8</strong></td><td>Saves £192/month</td></tr>
@@ -327,17 +329,19 @@
     </div>
 
     <h2 id="core-team">The Model Lineup (June 2026)</h2>
-    <p>After weeks of real-world testing, the lineup has been refined for reliability and cost. <strong>DeepSeek V4 Pro is the default workhorse</strong> — 54% cheaper on output than Kimi K2.5. Kimi is reserved for critical multi-step tasks only, summoned by <code>#kimi</code>. <strong>Ring 2.6 1T</strong> (<code>#ring</code>) is available for deep reasoning tasks but <strong>cannot handle tool calls</strong> — use it only for analysis and debugging, never for file edits or terminal commands. All model IDs can be overridden in <code>.env</code> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy.</p>
+<p>After weeks of real-world testing, the lineup has been refined for reliability and cost. <strong>DeepSeek V4 Pro is the default workhorse</strong> — 54% cheaper on output than Kimi K2.5. Kimi is reserved for critical multi-step tasks only, summoned by <code>#kimi</code>. <strong>Ring 2.6 1T</strong> (<code>#ring</code>) is available for deep reasoning tasks but <strong>cannot handle tool calls</strong> — use it only for analysis and debugging, never for file edits or terminal commands. <code>#pro</code> is an explicit alias for the planning model. <strong>DeepSeek V4 Flash</strong> (<code>#v4</code>) is the original workhorse — cheaper than V4 Pro but has occasional tool-call reliability issues. It's kept as a fallback. All model IDs can be overridden in <code>.env</code> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy.</p>
 
     <table>
         <thead><tr><th>Role</th><th>Model</th><th>Price /1M tokens</th><th>Use via</th></tr></thead>
         <tbody>
         <tr><td><span class="badge blue">Workhorse</span></td><td>DeepSeek V4 Pro</td><td>$0.44 / $0.87</td><td>Default (no prefix)</td></tr>
+        <tr><td><span class="badge blue">Explicit Alias</span></td><td>DeepSeek V4 Pro</td><td>$0.44 / $0.87</td><td><code>#pro</code></td></tr>
         <tr><td><span class="badge green">Bulk & Speed</span></td><td>Gemini 2.5 Flash</td><td>$0.30 / $2.50</td><td><code>#flash</code></td></tr>
         <tr><td><span class="badge blue">Vision</span></td><td>Perceptron Mk1</td><td>$0.15 / $1.50</td><td><code>#vision</code></td></tr>
         <tr><td><span class="badge red">Critical Tasks</span></td><td>Kimi K2.5</td><td>$0.40 / $1.98</td><td><code>#kimi</code></td></tr>
         <tr><td><span class="badge orange">Deep Reasoning</span></td><td>Ring 2.6 1T</td><td>$0.075 / $0.625</td><td><code>#ring</code> — no tool calls</td></tr>
         <tr><td><span class="badge blue">Budget Chat</span></td><td>DeepSeek Chat</td><td>$0.14 / $0.28</td><td><code>#dc</code></td></tr>
+        <tr><td><span class="badge blue">Legacy Workhorse</span></td><td>DeepSeek V4 Flash</td><td>$0.14 / $0.28</td><td><code>#v4</code> — original default, cheaper but less reliable</td></tr>
         </tbody>
     </table>
 
@@ -418,13 +422,35 @@ cd $env:USERPROFILE\.config\ultra-lite-proxy
 # Create .env with your REAL key and optional model overrides
 @"
 OPENROUTER_API_KEY=sk-or-v1-...
-# Optional: override default models (uncomment and edit as needed)
-DEFAULT_MODEL=deepseek/deepseek-v4-pro
+
+# --- Backend Selection ---
+# "openrouter" = use OpenRouter's cloud models
+# "local"      = use your own models via LOCAL_API_URL
+LLM_BACKEND=openrouter
+
+# --- Local Model Settings (only used when LLM_BACKEND=local) ---
+# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
+
+# ═══════════════════════════════════════════
+# Model Overrides — uncomment the block for your chosen backend
+# Uncomment a model line when you want to override the default
+# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
+# ═══════════════════════════════════════════
+
+# --- OpenRouter Models ---
+DEFAULT_MODEL=deepseek/deepseek-v4-pro  
 # PLANNING_MODEL=deepseek/deepseek-v4-pro
 # BULK_MODEL=google/gemini-2.5-flash
 # RING_MODEL=inclusionai/ring-2.6-1t
 # VISION_MODEL=perceptron/perceptron-mk1
 # KIMI_MODEL=moonshotai/kimi-k2.5
+# V4_MODEL=deepseek/deepseek-v4-flash
+
+# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
+# DEFAULT_MODEL=qwen2.5-coder:7b
+# PLANNING_MODEL=qwen2.5-coder:14b
+# BULK_MODEL=qwen2.5-coder:7b
+# RING_MODEL=deepseek-r1:7b
 "@ | Out-File -Encoding ascii .env
 
 # Add .env to .gitignore
@@ -454,13 +480,35 @@ cd ~/.config/ultra-lite-proxy
 # Create .env with your REAL key and optional model overrides
 cat > .env << 'EOF'
 OPENROUTER_API_KEY=sk-or-v1-...
-# Optional: override default models (uncomment and edit as needed)
-DEFAULT_MODEL=deepseek/deepseek-v4-pro
+
+# --- Backend Selection ---
+# "openrouter" = use OpenRouter's cloud models
+# "local"      = use your own models via LOCAL_API_URL
+LLM_BACKEND=openrouter
+
+# --- Local Model Settings (only used when LLM_BACKEND=local) ---
+# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
+
+# ═══════════════════════════════════════════
+# Model Overrides — uncomment the block for your chosen backend
+# Uncomment a model line when you want to override the default
+# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
+# ═══════════════════════════════════════════
+
+# --- OpenRouter Models ---
+DEFAULT_MODEL=deepseek/deepseek-v4-pro  
 # PLANNING_MODEL=deepseek/deepseek-v4-pro
 # BULK_MODEL=google/gemini-2.5-flash
 # RING_MODEL=inclusionai/ring-2.6-1t
 # VISION_MODEL=perceptron/perceptron-mk1
 # KIMI_MODEL=moonshotai/kimi-k2.5
+# V4_MODEL=deepseek/deepseek-v4-flash
+
+# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
+# DEFAULT_MODEL=qwen2.5-coder:7b
+# PLANNING_MODEL=qwen2.5-coder:14b
+# BULK_MODEL=qwen2.5-coder:7b
+# RING_MODEL=deepseek-r1:7b
 EOF
 
 # Add .env to .gitignore
@@ -490,13 +538,35 @@ cd ~/.config/ultra-lite-proxy
 # Create .env with your REAL key and optional model overrides
 cat > .env << 'EOF'
 OPENROUTER_API_KEY=sk-or-v1-...
-# Optional: override default models (uncomment and edit as needed)
-DEFAULT_MODEL=deepseek/deepseek-v4-pro
+
+# --- Backend Selection ---
+# "openrouter" = use OpenRouter's cloud models
+# "local"      = use your own models via LOCAL_API_URL
+LLM_BACKEND=openrouter
+
+# --- Local Model Settings (only used when LLM_BACKEND=local) ---
+# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
+
+# ═══════════════════════════════════════════
+# Model Overrides — uncomment the block for your chosen backend
+# Uncomment a model line when you want to override the default
+# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
+# ═══════════════════════════════════════════
+
+# --- OpenRouter Models ---
+DEFAULT_MODEL=deepseek/deepseek-v4-pro  
 # PLANNING_MODEL=deepseek/deepseek-v4-pro
 # BULK_MODEL=google/gemini-2.5-flash
 # RING_MODEL=inclusionai/ring-2.6-1t
 # VISION_MODEL=perceptron/perceptron-mk1
 # KIMI_MODEL=moonshotai/kimi-k2.5
+# V4_MODEL=deepseek/deepseek-v4-flash
+
+# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
+# DEFAULT_MODEL=qwen2.5-coder:7b
+# PLANNING_MODEL=qwen2.5-coder:14b
+# BULK_MODEL=qwen2.5-coder:7b
+# RING_MODEL=deepseek-r1:7b
 EOF
 
 # Add .env to .gitignore
@@ -558,6 +628,7 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
         <li><strong>Reasoning disabled on DeepSeek</strong> — prevents empty tool-call responses</li>
         <li><strong>Full model list exposed</strong> — Cline sees all available models</li>
         <li><strong>Prompt caching enabled</strong> — massive cost savings on repeated context</li>
+        <li><strong>Backend switching</strong> — use OpenRouter or your own local models with one <code>.env</code> change</li>
     </ul>
 
     <p>Start the proxy (make sure your venv is activated):</p>
@@ -569,7 +640,44 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
     <div id="step3-win" class="os-panel active"><pre><code>python proxy.py</code></pre></div>
     <div id="step3-mac" class="os-panel"><pre><code>python3 proxy.py</code></pre></div>
     <div id="step3-linux" class="os-panel"><pre><code>python3 proxy.py</code></pre></div>
-    <p>You'll see <code>Uvicorn running on http://127.0.0.1:8000</code>. Keep this terminal open.</p>
+    <p>You'll see the backend banner and <code>Uvicorn running on http://127.0.0.1:8000</code>. Keep this terminal open.</p>
+
+    <h2 id="own-models">Using Your Own Models (Ollama, vLLM, LM Studio, etc.)</h2>
+    <p>The LLM Gateway pattern is provider-agnostic. You're not locked into OpenRouter. If you have your own models — whether that's <strong>Ollama</strong> on a Mac, <strong>vLLM</strong> on a server rack, <strong>LM Studio</strong> on a desktop, or any other tool that exposes an OpenAI-compatible API — your proxy can route to them the same way.</p>
+
+    <h3>What changes in .env</h3>
+    <p>Just point the proxy at your local endpoint and switch the backend:</p>
+    <pre><code># .env — using your own models instead of OpenRouter
+LLM_BACKEND=local                                    # Switch from "openrouter" to "local"
+LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
+# OPENROUTER_API_KEY=sk-...                          # Not needed for local models
+
+# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
+DEFAULT_MODEL=qwen2.5-coder:7b
+PLANNING_MODEL=qwen2.5-coder:14b
+BULK_MODEL=qwen2.5-coder:7b
+RING_MODEL=deepseek-r1:7b</code></pre>
+
+    <div class="callout">
+        <strong>🔒 Privacy by design:</strong> The proxy script itself defaults to local-only mode — if <code>LLM_BACKEND</code> isn't set, no data leaves your machine. The guide sets it to <code>openrouter</code> because that's what we're here to set up, but you can switch to <code>local</code> at any time. One word in <code>.env</code>, and your data never leaves your network.
+    </div>
+
+    <h3>Providers that work with this pattern</h3>
+    <table>
+        <thead><tr><th>Tool</th><th>Default API URL</th><th>Best for</th></tr></thead>
+        <tbody>
+        <tr><td><strong>Ollama</strong></td><td><code>http://localhost:11434/v1</code></td><td>Easiest all-rounder — Mac, Linux, Windows</td></tr>
+        <tr><td><strong>LM Studio</strong></td><td><code>http://localhost:1234/v1</code></td><td>Desktop app, no terminal needed</td></tr>
+        <tr><td><strong>vLLM</strong></td><td><code>http://your-server:8000/v1</code></td><td>Production workloads, high throughput</td></tr>
+        <tr><td><strong>llamafile</strong></td><td><code>http://localhost:8080/v1</code></td><td>Single file, zero install, air-gapped</td></tr>
+        <tr><td><strong>LocalAI</strong></td><td><code>http://localhost:8080/v1</code></td><td>Full OpenAI API replacement</td></tr>
+        <tr><td><strong>Text Generation Inference</strong></td><td><code>http://your-server:80/v1</code></td><td>Hugging Face's enterprise server</td></tr>
+        </tbody>
+    </table>
+
+    <div class="security-callout">
+        <strong>🔒 Privacy advantage:</strong> When using local models, your code never leaves your network. No API keys, no external providers, no data retention concerns. Combined with the proxy binding to <code>127.0.0.1</code>, this gives you a completely air-gapped AI coding assistant if needed. For companies working on sensitive data, this means AI-assisted coding without anything ever leaving the building. The same hashtags, the same rules, the same workflow — just running on your own hardware.
+    </div>
 
     <h2 id="step4">Step 4: Auto-Start the Proxy (Global)</h2>
     <div class="callout">
@@ -814,10 +922,12 @@ DeepSeek V4 Pro. I have multiple models available, selectable by prefix:
 - plan: → DeepSeek V4 Pro (architecture/planning, Plan mode, read-only)
 - ask: → DeepSeek V4 Pro (questions without editing files)
 - agent: → DeepSeek V4 Pro (explicit Act mode, same as default)
+- #pro → DeepSeek V4 Pro (explicit alias for planning, same as default)
 - #flash → Gemini 2.5 Flash (cheap bulk edits, simple tasks)
 - #kimi → Kimi K2.5 (best tool-calling reliability, critical multi-step tasks)
 - #dc → DeepSeek Chat (cheap alternative for simple read-only prompts)
-- #vision → Perceptron Mk1 (screenshots; always use Puppeteer MCP)
+- #v4 → DeepSeek V4 Flash (original workhorse, cheaper, occasional tool-call issues)
+- #vision → Perceptron Mk1 (visual tasks, SVG generation, image analysis)
 - #ring → Ring 2.6 1T (deep reasoning, NO tool calls)
 
 My MCP servers (kept minimal to control token costs):
@@ -842,7 +952,7 @@ REPO ANALYSIS: I use free external AI chats to analyse GitHub repositories,
 When I start a task, I will tell you explicitly which tools to use. If I don't
 specify, only use FILESYSTEM and MEMORY by default. Ask before enabling anything else.
 
-Context window: 1M tokens. Prompt caching enabled. OpenRouter ~£4-8/month typical cost.
+Context window: 1M tokens. Prompt caching enabled. OpenRouter ~£4–8/month typical cost.
 Built and tested on Windows 11. MCP servers kept minimal to control token costs.</code></pre>
 
     <h2 id="step8">Step 8: Verifying Everything Works</h2>
@@ -863,12 +973,14 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
             <tbody>
             <tr><td><code>plan: design a new auth flow</code></td><td>DeepSeek V4 Pro, Plan mode (read-only)</td></tr>
             <tr><td><code>agent: add Stripe checkout</code></td><td>DeepSeek V4 Pro executes with full tool use (same as default)</td></tr>
+            <tr><td><code>#pro design a new auth flow</code></td><td>DeepSeek V4 Pro — explicit alias for planning model</td></tr>
             <tr><td><code>ask: how does JWT refresh work?</code></td><td>DeepSeek V4 Pro answers without editing files</td></tr>
             <tr><td><code>#flash rename getCwd to currentWorkingDirectory</code></td><td>Gemini 2.5 Flash bulk edit</td></tr>
             <tr><td><code>#kimi Fix this critical race condition in the auth flow</code></td><td>Kimi K2.5 — perfect tool-calling for critical tasks</td></tr>
             <tr><td><code>#ring debug this recursive function</code></td><td>Ring 2.6 1T deep reasoning (no tool calls!)</td></tr>
             <tr><td><code>#vision Create an SVG of a modern logo</code></td><td>Perceptron Mk1 — visual/spatial tasks</td></tr>
             <tr><td><code>#dc What does git status do?</code></td><td>DeepSeek Chat — cheap, simple prompts only</td></tr>
+            <tr><td><code>#v4 add pagination to the API</code></td><td>DeepSeek V4 Flash — original workhorse, cheaper but occasional tool-call issues</td></tr>
             <tr><td>Just type a coding request</td><td>DeepSeek V4 Pro, the reliable daily driver</td></tr>
             </tbody>
         </table>
@@ -882,6 +994,48 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
             <tr><td>Deep debugging</td><td>Enable sequential-thinking temporarily for that session</td></tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="cheatsheet-box" id="context-cheatsheet">
+        <h3 style="margin-top:0;">🧠 Context Management — How Cline Tasks Actually Work</h3>
+        <p>Cline tasks persist between sessions. Close Cursor at night, reopen in the morning, and your conversation is still there — no command needed. This is the key to keeping costs low.</p>
+        
+        <h3>📋 Commands & When to Use Them</h3>
+        <table>
+            <thead><tr><th>Command</th><th>What it does</th><th>When to use</th></tr></thead>
+            <tbody>
+            <tr><td><strong>Just keep typing</strong></td><td>Continues the same conversation. Cline remembers everything from previous messages. No command needed.</td><td>Your default — next prompt, next day, next week. Just pick up where you left off.</td></tr>
+            <tr><td><code>/smol</code></td><td>Compresses the conversation history into a concise summary, freeing up context space. The cached system prompt stays intact — you keep the 90% discount.</td><td>Every 10–15 messages, or when responses start feeling slow. Think of it like hitting save — regularly, but not after every line.</td></tr>
+            <tr><td><code>/newtask</code></td><td>Creates a handover summary of what's been done (files changed, decisions made, what's next) and opens a fresh task with that summary as context. The old task is archived.</td><td>Only when switching to a completely different feature or project, or when returning to a project after several months and the old conversation feels sluggish.</td></tr>
+            <tr><td><code>#flash</code></td><td>Routes to Gemini 2.5 Flash — ~80% cheaper per request than the default model.</td><td>Simple bulk edits: adding JSDoc, formatting, renaming variables across files.</td></tr>
+            <tr><td><code>#dc</code></td><td>Routes to DeepSeek Chat — ~90% cheaper per request than the default model.</td><td>Read-only questions: "How does this library work?", "What's the difference between X and Y?"</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.5rem;">🔄 How Tasks Persist</h3>
+        <table>
+            <thead><tr><th>What you do</th><th>What happens</th></tr></thead>
+            <tbody>
+            <tr><td>Close Cursor at night</td><td>Your task is saved automatically. No action needed.</td></tr>
+            <tr><td>Reopen Cursor in the morning</td><td>Cline reconnects. Your conversation is exactly where you left it. The system prompt is still cached — you keep the discount.</td></tr>
+            <tr><td>Return after a week off</td><td>Same — reopen and continue. No command needed.</td></tr>
+            <tr><td>Return after a few months</td><td>Try reopening. If it feels sluggish or confused, run <code>/newtask</code> once. It'll create a handover summary and start fresh.</td></tr>
+            <tr><td>Start a completely different project</td><td>Run <code>/newtask</code>. The old task is archived with its handover. The new task is clean.</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.5rem;">💰 Why This Matters for Cost</h3>
+        <p>Every time you start a brand new task (not via <code>/newtask</code>), Cline sends its full system prompt, your <code>.clinerules</code>, and MCP tool definitions — about 20–30K tokens — at full price. When you stay in one task, prompt caching kicks in and you pay only ~10% of that for every subsequent request.</p>
+        <table>
+            <thead><tr><th>Strategy</th><th>System Overhead (10 prompts)</th><th>Total Cost</th></tr></thead>
+            <tbody>
+            <tr><td>New task for every prompt</td><td>10 × 25K = 250K tokens</td><td><strong>High</strong></td></tr>
+            <tr><td>One task, stay in it</td><td>1 × 25K + 9 × 2.5K = 47.5K tokens</td><td><strong>~80% less</strong></td></tr>
+            <tr><td>One task, <code>/smol</code> every 10–15 messages</td><td>Same as above + less conversation bloat</td><td><strong>Lowest</strong></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top:1rem;"><strong>🧠 The golden rule:</strong> One project = one task. Stay in it. <code>/smol</code> every 10–15 messages. <code>/newtask</code> only for genuine context switches. <code>#flash</code> for simple edits, <code>#dc</code> for questions. Close Cursor when you're done — your task will be waiting for you tomorrow.</p>
     </div>
 
     <h2 id="step9">Step 9: One‑Stop Stack Maintenance</h2>

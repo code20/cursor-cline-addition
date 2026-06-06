@@ -7,10 +7,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
-if not OPENROUTER_KEY:
-    raise RuntimeError("CRITICAL: OPENROUTER_API_KEY missing from .env")
+# --- Backend Selection ---
+# "local" (default) = use your own models. "openrouter" = use OpenRouter.
+LLM_BACKEND = os.getenv("LLM_BACKEND", "local")
+LOCAL_API_URL = os.getenv("LOCAL_API_URL", "http://localhost:11434/v1")
 
+if LLM_BACKEND == "openrouter":
+    TARGET_URL = "https://openrouter.ai/api/v1/chat/completions"
+    OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
+    if not OPENROUTER_KEY:
+        raise RuntimeError("CRITICAL: OPENROUTER_API_KEY missing from .env. Set it or switch to LLM_BACKEND=local")
+else:
+    TARGET_URL = f"{LOCAL_API_URL}/chat/completions"
+    OPENROUTER_KEY = None
+
+# --- Model IDs — configure in .env, or keep the defaults ---
 DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "deepseek/deepseek-v4-pro")
 PLANNING_MODEL = os.getenv("PLANNING_MODEL", "deepseek/deepseek-v4-pro")
 BULK_MODEL = os.getenv("BULK_MODEL", "google/gemini-2.5-flash")
@@ -25,7 +36,7 @@ KEYWORD_MAP = {
     "#ring": RING_MODEL,
     "#vision": VISION_MODEL,
     "#kimi": os.getenv("KIMI_MODEL", "moonshotai/kimi-k2.5"),
-    "#dc": "deepseek/deepseek-chat",
+    "#dc": os.getenv("DEEPSEEK_CHAT_MODEL", "deepseek/deepseek-chat"),
 }
 
 REASONING_EFFORT = {"inclusionai/ring-2.6-1t": "high"}
@@ -86,12 +97,13 @@ def detect_routing(payload):
 
 async def call_openrouter(data: dict, request: Request):
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": os.getenv("OR_PROXY_REFERER", "https://github.com/your-username/ultra-lite-proxy"),
         "X-Title": os.getenv("OR_PROXY_TITLE", "Ultra-Lite Proxy"),
-        "OpenRouter-Enable-Prompt-Caching": "true",
     }
+    if LLM_BACKEND == "openrouter":
+        headers["Authorization"] = f"Bearer {OPENROUTER_KEY}"
+        headers["OpenRouter-Enable-Prompt-Caching"] = "true"
 
     model = data.get("model", "")
 
@@ -100,7 +112,7 @@ async def call_openrouter(data: dict, request: Request):
     if model == VISION_MODEL and "annotation_format" not in data:
         data.update(VISION_PARAMS)
 
-    if "provider" not in data:
+    if LLM_BACKEND == "openrouter" and "provider" not in data:
         data["provider"] = {"sort": "latency", "ignore": ["openai"]}
 
     client = get_client()
@@ -108,7 +120,7 @@ async def call_openrouter(data: dict, request: Request):
     for attempt in range(MAX_RETRIES + 1):
         try:
             async with client.stream(
-                "POST", "https://openrouter.ai/api/v1/chat/completions",
+                "POST", TARGET_URL,
                 json=data, headers=headers
             ) as resp:
                 if resp.status_code in (429, 502) and attempt < MAX_RETRIES:
@@ -116,7 +128,7 @@ async def call_openrouter(data: dict, request: Request):
                     continue
                 if resp.status_code != 200:
                     error_text = await resp.aread()
-                    error_data = {"error": f"OpenRouter error {resp.status_code}: {error_text.decode()}"}
+                    error_data = {"error": f"Backend error {resp.status_code}: {error_text.decode()}"}
                     yield json.dumps(error_data).encode()
                     return
 
@@ -139,7 +151,7 @@ async def chat(request: Request):
     data = await request.json()
     model, data = detect_routing(data)
     data["model"] = model
-    print(f"→ Routed to: {model}")
+    print(f"→ Routed to: {model}  ({LLM_BACKEND})")
     stream_gen = call_openrouter(data, request)
     return StreamingResponse(stream_gen, media_type="text/event-stream")
 
@@ -152,4 +164,5 @@ async def models():
 
 if __name__ == "__main__":
     import uvicorn
+    print(f"→ Backend: {LLM_BACKEND.upper()}  |  Target: {TARGET_URL}")
     uvicorn.run(app, host="127.0.0.1", port=8000)

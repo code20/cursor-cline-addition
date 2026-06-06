@@ -1,5 +1,7 @@
 # Cursor Cline Addition — A £4–8/month AI Coding Assistant
 
+By [@code20](https://github.com/code20)
+
 [![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D6)](https://www.microsoft.com/windows)
 [![Cost](https://img.shields.io/badge/cost-£4–8%2Fmonth-10b981)](https://openrouter.ai)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -24,7 +26,7 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 - Controls costs with OpenRouter's prepaid system (no surprise bills)
 - Handles retries, provider filtering, and prompt caching
 - Keeps your API keys secure on your machine
-- Works with Cline for agentic coding (file editing, terminal commands)
+- Optionally route to your own local models (Ollama, vLLM, LM Studio, etc.) instead of OpenRouter
 
 ---
 
@@ -40,14 +42,16 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
 ## 🧠 Models at Your Fingertips
 
-| Model            | Use via   | Best for                   |
-| ---------------- | --------- | -------------------------- |
-| DeepSeek V4 Pro  | Default   | Everyday workhorse         |
-| Gemini 2.5 Flash | `#flash`  | Cheap bulk edits           |
-| Kimi K2.5        | `#kimi`   | Critical multi-step tasks  |
-| Perceptron Mk1   | `#vision` | Screenshots & UI analysis  |
-| DeepSeek Chat    | `#dc`     | Simple prompts on a budget |
-| Ring 2.6 1T      | `#ring`   | Deep reasoning (no tools)  |
+| Model             | Use via   | Best for                                  |
+| ----------------- | --------- | ----------------------------------------- |
+| DeepSeek V4 Pro   | Default   | Everyday workhorse                        |
+| Gemini 2.5 Flash  | `#flash`  | Cheap bulk edits                          |
+| Kimi K2.5         | `#kimi`   | Critical multi-step tasks                 |
+| Perceptron Mk1    | `#vision` | Screenshots & UI analysis                 |
+| DeepSeek Chat     | `#dc`     | Simple prompts on a budget                |
+| Ring 2.6 1T       | `#ring`   | Deep reasoning (no tools)                 |
+| DeepSeek V4 Pro   | `#pro`    | Explicit alias for planning               |
+| DeepSeek V4 Flash | `#v4`     | Legacy workhorse (cheaper, less reliable) |
 
 ---
 
@@ -71,6 +75,7 @@ It covers:
 
 - Setting up OpenRouter with hard spending caps and privacy guardrails
 - Building the LLM Gateway proxy with all production fixes
+- Using your own local models instead of OpenRouter (Ollama, vLLM, etc.)
 - Installing and configuring Cline with MCP servers
 - The complete `.clinerules` file for browser safety and code quality
 - Real-world cost data: £14.72 for a full production month
@@ -87,7 +92,12 @@ cd $env:USERPROFILE\.config\ultra-lite-proxy
 
 # 2. Create .env with your OpenRouter key
 "OPENROUTER_API_KEY=sk-or-v1-..." | Out-File -Encoding ascii .env
+"LLM_BACKEND=openrouter" | Out-File -Encoding ascii -Append .env
 "DEFAULT_MODEL=deepseek/deepseek-v4-pro" | Out-File -Encoding ascii -Append .env
+"# PLANNING_MODEL=deepseek/deepseek-v4-pro" | Out-File -Encoding ascii -Append .env
+"# BULK_MODEL=google/gemini-2.5-flash" | Out-File -Encoding ascii -Append .env
+"# KIMI_MODEL=moonshotai/kimi-k2.5" | Out-File -Encoding ascii -Append .env
+"# V4_MODEL=deepseek/deepseek-v4-flash" | Out-File -Encoding ascii -Append .env
 
 # 3. Set up Python
 python -m venv venv
