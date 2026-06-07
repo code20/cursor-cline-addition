@@ -268,7 +268,7 @@
 </head>
 <body>
 <div class="container">
-    <p style="color:var(--muted); font-size:0.8rem; text-align:center; margin-bottom:0;">Version 2.2 — June 2026 · by <a href="https://github.com/code20">@code20</a></p>
+    <p style="color:var(--muted); font-size:0.8rem; text-align:center; margin-bottom:0;">Version 2.3 — June 2026 · by <a href="https://github.com/code20">@code20</a></p>
     <h1>Cursor Cline Addition</h1>
     <p class="subtitle">I Built a Cursor Ultra Alternative for £4–8/Month — 2026 OpenRouter Guide</p>
 
@@ -296,6 +296,7 @@
             <li><a href="#cost-comparison">What You'll Actually Pay</a></li>
             <li><a href="#core-team">The Model Lineup</a></li>
             <li><a href="#cost-data">Real-World Cost Data (Power User)</a></li>
+            <li><a href="#why-proxy">Why the Proxy?</a></li>
             <li><a href="#prerequisites">Prerequisites</a></li>
             <li><a href="#step1">Step 1: OpenRouter Account Setup</a></li>
             <li><a href="#step2">Step 2: Project Directory & Environment</a></li>
@@ -307,6 +308,8 @@
             <li><a href="#step7">Step 7: .clinerules & External AI Context</a></li>
             <li><a href="#step8">Step 8: Verification</a></li>
             <li><a href="#cheatsheet">Quick Reference Cheatsheet</a></li>
+            <li><a href="#context-cheatsheet">Context Management — How Cline Tasks Work</a></li>
+            <li><a href="#daily-driver">Your Daily Driver — Quick Reference Card</a></li>
             <li><a href="#step9">Step 9: Maintenance</a></li>
             <li><a href="#troubleshooting">Troubleshooting & Lessons Learned</a></li>
         </ol>
@@ -314,9 +317,9 @@
 
     <h2 id="cost-comparison">What You'll Actually Pay</h2>
     <p>This isn't a "$20/month subscription" guide. That's what a <em>power user</em> building an entire production CMS with admin panel and documentation paid in a heavy month. Here's what <strong>you</strong> — the everyday developer — can expect:</p>
-
+    
     <table>
-        <thead><tr><th>User Type</th><th>Monthly Tokens</th><th>Monthly Cost</th><th>vs. Cursor Ultra (£160)</th></tr></thead>
+        <thead><tr><th>User Type</th><th>Monthly Tokens</th><th>Monthly Cost</th><th>vs. Cursor Ultra ($200)</th></tr></thead>
         <tbody>
         <tr><td><span class="badge green">Casual</span></td><td>5–15M</td><td><strong>£2–4</strong></td><td>Saves £196/month</td></tr>
         <tr><td><span class="badge blue">Typical Developer</span></td><td>20–40M</td><td><strong>£4–8</strong></td><td>Saves £192/month</td></tr>
@@ -329,7 +332,7 @@
     </div>
 
     <h2 id="core-team">The Model Lineup (June 2026)</h2>
-<p>After weeks of real-world testing, the lineup has been refined for reliability and cost. <strong>DeepSeek V4 Pro is the default workhorse</strong> — 54% cheaper on output than Kimi K2.5. Kimi is reserved for critical multi-step tasks only, summoned by <code>#kimi</code>. <strong>Ring 2.6 1T</strong> (<code>#ring</code>) is available for deep reasoning tasks but <strong>cannot handle tool calls</strong> — use it only for analysis and debugging, never for file edits or terminal commands. <code>#pro</code> is an explicit alias for the planning model. <strong>DeepSeek V4 Flash</strong> (<code>#v4</code>) is the original workhorse — cheaper than V4 Pro but has occasional tool-call reliability issues. It's kept as a fallback. All model IDs can be overridden in <code>.env</code> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy.</p>
+<p>After weeks of real-world testing, the lineup has been refined for reliability and cost. <strong>DeepSeek V4 Pro is the default workhorse</strong> — 54% cheaper on output than Kimi K2.5. Kimi is reserved for critical multi-step tasks only, summoned by <code>#kimi</code>. <strong>Ring 2.6 1T</strong> (<code>#ring</code>) is available for deep reasoning tasks but <strong>cannot handle tool calls</strong> — use it only for analysis and debugging, never for file edits or terminal commands. <code>#pro</code> is an explicit alias for the planning model. <strong>DeepSeek V4 Flash</strong> (<code>#v4</code>) is the original workhorse — cheaper than V4 Pro but has occasional tool-call reliability issues. It's kept as a fallback. <strong>Single <code>#</code> (e.g. <code>#kimi</code>) applies to one message. Double <code>##</code> (e.g. <code>##kimi</code>) locks that model for the entire task, including all tool calls.</strong> All model IDs can be overridden in <code>.env</code> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy.</p>
 
     <table>
         <thead><tr><th>Role</th><th>Model</th><th>Price /1M tokens</th><th>Use via</th></tr></thead>
@@ -365,6 +368,22 @@
         <strong>The takeaway:</strong> Even if you code like a maniac and ship an entire production system, you'll pay less than £15/month. If you're a typical developer doing feature work and bug fixes, you'll land in the £4–8 range. That's 96% less than Cursor Ultra — with better models, full privacy, and zero vendor lock-in.
     </div>
 
+    <h2 id="why-proxy">Why the Proxy? (vs. Direct Cline + OpenRouter)</h2>
+    <p>You can absolutely use Cursor (free) + Cline + OpenRouter directly — pick a model from a dropdown and start coding. That works. The proxy adds four things the direct setup doesn't:</p>
+
+    <table>
+        <thead><tr><th>Feature</th><th>Direct Setup</th><th>With the Proxy</th></tr></thead>
+        <tbody>
+        <tr><td><strong>Switch models</strong></td><td>Open Cline settings → change dropdown → save</td><td>Type <code>#flash</code> or <code>#kimi</code> in your prompt</td></tr>
+        <tr><td><strong>Hard spending cap</strong></td><td>Whatever OpenRouter charges</td><td>Prepaid credits — when they run out, everything stops</td></tr>
+        <tr><td><strong>API key security</strong></td><td>Stored in Cline settings</td><td>Stored in a local <code>.env</code> file — the proxy injects it, Cline never sees it</td></tr>
+        <tr><td><strong>Local models</strong></td><td>Not possible with OpenRouter setup</td><td>One-line <code>.env</code> change — same hashtags, zero cost, absolute privacy</td></tr>
+        <tr><td><strong>Persistent model lock</strong></td><td>One model per session</td><td><code>##kimi</code> locks that model for the entire task including tool calls</td></tr>
+        </tbody>
+    </table>
+
+    <p>The direct setup is perfectly fine. The proxy is an upgrade — instant model switching, cost protection, better privacy, and the flexibility to use local models when you want complete air-gapped coding. It takes 10 minutes to set up and you never have to think about it again.</p>
+
     <h2 id="prerequisites">Prerequisites</h2>
     <ul>
         <li><strong>Python 3.8+</strong> — <a href="https://python.org" target="_blank">python.org</a></li>
@@ -398,7 +417,8 @@
     <p>Now you have a single API key, a hard spending cap, and full privacy controls.</p>
 
     <h2 id="step2">Step 2: Project Directory & Environment</h2>
-    <p>We'll store the proxy — and your API key — in a single global location. <strong>No per‑project <code>.env</code> files.</strong> No risk of accidentally committing secrets. The only file your projects ever need is a <code>.clinerules</code>.</p>
+    
+    <p>We'll store the proxy — and your API key — in a single global location. <strong>No per‑project <code>.env</code> files.</strong> No risk of accidentally committing secrets. The repo includes an <a href="https://github.com/code20/cursor-cline-addition/blob/main/.env.example" target="_blank"><code>.env.example</code></a> — copy it to <code>.env</code>, add your key, and you're done. The only file your projects ever need is a <code>.clinerules</code>.</p>
 
     <div class="security-callout">
         <strong>Why this is safer than per-project .env files:</strong> Your API key lives in a single global location (<code>~/.config/ultra-lite-proxy/.env</code>), not scattered across every project folder. That means:<br /><br />
@@ -419,40 +439,9 @@
 New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.config\ultra-lite-proxy
 cd $env:USERPROFILE\.config\ultra-lite-proxy
 
-# Create .env with your REAL key and optional model overrides
-@"
-OPENROUTER_API_KEY=sk-or-v1-...
-
-# --- Backend Selection ---
-# "openrouter" = use OpenRouter's cloud models
-# "local"      = use your own models via LOCAL_API_URL
-LLM_BACKEND=openrouter
-
-# --- Local Model Settings (only used when LLM_BACKEND=local) ---
-# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
-
-# ═══════════════════════════════════════════
-# Model Overrides — uncomment the block for your chosen backend
-# Uncomment a model line when you want to override the default
-# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
-# ═══════════════════════════════════════════
-
-# --- OpenRouter Models ---
-DEFAULT_MODEL=deepseek/deepseek-v4-pro  
-# PLANNING_MODEL=deepseek/deepseek-v4-pro
-# BULK_MODEL=google/gemini-2.5-flash
-# RING_MODEL=inclusionai/ring-2.6-1t
-# VISION_MODEL=perceptron/perceptron-mk1
-# KIMI_MODEL=moonshotai/kimi-k2.5
-# DEEPSEEK_CHAT_MODEL=deepseek/deepseek-chat
-# V4_MODEL=deepseek/deepseek-v4-flash
-
-# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
-# DEFAULT_MODEL=qwen2.5-coder:7b
-# PLANNING_MODEL=qwen2.5-coder:14b
-# BULK_MODEL=qwen2.5-coder:7b
-# RING_MODEL=deepseek-r1:7b
-"@ | Out-File -Encoding ascii .env
+# Copy .env.example from the repo and add your OpenRouter key
+Copy-Item .env.example .env
+# Edit .env and replace sk-or-v1-your-key-here with your real key
 
 # Add .env to .gitignore
 ".env" | Out-File -Encoding ascii -Append .gitignore
@@ -478,40 +467,9 @@ fi
 mkdir -p ~/.config/ultra-lite-proxy
 cd ~/.config/ultra-lite-proxy
 
-# Create .env with your REAL key and optional model overrides
-cat > .env << 'EOF'
-OPENROUTER_API_KEY=sk-or-v1-...
-
-# --- Backend Selection ---
-# "openrouter" = use OpenRouter's cloud models
-# "local"      = use your own models via LOCAL_API_URL
-LLM_BACKEND=openrouter
-
-# --- Local Model Settings (only used when LLM_BACKEND=local) ---
-# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
-
-# ═══════════════════════════════════════════
-# Model Overrides — uncomment the block for your chosen backend
-# Uncomment a model line when you want to override the default
-# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
-# ═══════════════════════════════════════════
-
-# --- OpenRouter Models ---
-DEFAULT_MODEL=deepseek/deepseek-v4-pro  
-# PLANNING_MODEL=deepseek/deepseek-v4-pro
-# BULK_MODEL=google/gemini-2.5-flash
-# RING_MODEL=inclusionai/ring-2.6-1t
-# VISION_MODEL=perceptron/perceptron-mk1
-# KIMI_MODEL=moonshotai/kimi-k2.5
-# DEEPSEEK_CHAT_MODEL=deepseek/deepseek-chat
-# V4_MODEL=deepseek/deepseek-v4-flash
-
-# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
-# DEFAULT_MODEL=qwen2.5-coder:7b
-# PLANNING_MODEL=qwen2.5-coder:14b
-# BULK_MODEL=qwen2.5-coder:7b
-# RING_MODEL=deepseek-r1:7b
-EOF
+# Copy .env.example from the repo and add your OpenRouter key
+cp .env.example .env
+# Edit .env and replace sk-or-v1-your-key-here with your real key
 
 # Add .env to .gitignore
 echo ".env" >> .gitignore
@@ -537,40 +495,9 @@ chmod +x .git/hooks/pre-commit</code></pre>
 mkdir -p ~/.config/ultra-lite-proxy
 cd ~/.config/ultra-lite-proxy
 
-# Create .env with your REAL key and optional model overrides
-cat > .env << 'EOF'
-OPENROUTER_API_KEY=sk-or-v1-...
-
-# --- Backend Selection ---
-# "openrouter" = use OpenRouter's cloud models
-# "local"      = use your own models via LOCAL_API_URL
-LLM_BACKEND=openrouter
-
-# --- Local Model Settings (only used when LLM_BACKEND=local) ---
-# LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
-
-# ═══════════════════════════════════════════
-# Model Overrides — uncomment the block for your chosen backend
-# Uncomment a model line when you want to override the default
-# When switching to local, comment out all OpenRouter Models and set the default local model you want to use.
-# ═══════════════════════════════════════════
-
-# --- OpenRouter Models ---
-DEFAULT_MODEL=deepseek/deepseek-v4-pro  
-# PLANNING_MODEL=deepseek/deepseek-v4-pro
-# BULK_MODEL=google/gemini-2.5-flash
-# RING_MODEL=inclusionai/ring-2.6-1t
-# VISION_MODEL=perceptron/perceptron-mk1
-# KIMI_MODEL=moonshotai/kimi-k2.5
-# DEEPSEEK_CHAT_MODEL=deepseek/deepseek-chat
-# V4_MODEL=deepseek/deepseek-v4-flash
-
-# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
-# DEFAULT_MODEL=qwen2.5-coder:7b
-# PLANNING_MODEL=qwen2.5-coder:14b
-# BULK_MODEL=qwen2.5-coder:7b
-# RING_MODEL=deepseek-r1:7b
-EOF
+# Copy .env.example from the repo and add your OpenRouter key
+cp .env.example .env
+# Edit .env and replace sk-or-v1-your-key-here with your real key
 
 # Add .env to .gitignore
 echo ".env" >> .gitignore
@@ -591,6 +518,7 @@ fi
 HOOK
 chmod +x .git/hooks/pre-commit</code></pre>
     </div>
+    <p><strong>💡 Tip:</strong> The repo includes an <a href="https://github.com/code20/cursor-cline-addition/blob/main/.env.example" target="_blank"><code>.env.example</code></a> file — a starter template with all models pre-configured. Copy it to <code>.env</code>, add your OpenRouter key, and you're ready to go.</p>
     <p>If <code>python</code> is not found, disable any Microsoft Store aliases (Windows) or ensure Python is in your PATH. On macOS/Linux, use <code>python3 --version</code> to verify the correct command.</p>
     <p>Create a virtual environment and install dependencies:</p>
 
@@ -635,6 +563,9 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
     </ul>
 
     <p>Start the proxy (make sure your venv is activated):</p>
+    <div class="platform-note">
+        <strong>🪟 Windows users:</strong> The first time you run <code>python proxy.py</code>, Windows Defender or your firewall may flag it and block the port. Click <strong>"Allow access"</strong> in the popup. The proxy only listens on <code>127.0.0.1</code> — it's not accessible from your network.
+    </div>
     <div class="os-tabs">
         <button class="os-tab win-tested active" onclick="switchOS(event, 'win', 'step3')">🪟 Windows (tested)</button>
         <button class="os-tab" onclick="switchOS(event, 'mac', 'step3')">🍎 macOS (courtesy)</button>
@@ -677,6 +608,17 @@ RING_MODEL=deepseek-r1:7b</code></pre>
         <tr><td><strong>Text Generation Inference</strong></td><td><code>http://your-server:80/v1</code></td><td>Hugging Face's enterprise server</td></tr>
         </tbody>
     </table>
+
+    <h3>Direct Provider Access</h3>
+    <p>The proxy also supports routing directly to a single provider (like OpenRouter, OpenAI, Anthropic) without model switching — just a transparent passthrough with no hashtag-based routing or spending caps. This is useful for testing or when you need to bypass the proxy's routing logic entirely.</p>
+    <pre><code># .env — direct provider access
+        LLM_BACKEND=direct                                   # Passthrough mode — no routing, no spending cap
+        DIRECT_API_URL=https://api.anthropic.com/v1          # Any OpenAI-compatible endpoint
+        DIRECT_API_KEY=sk-ant-...                            # Your provider API key
+        DIRECT_API_PROVIDER=anthropic                        # "anthropic", "openai", or "groq"</code></pre>
+        <div class="callout">
+            <strong>⚠️ Warning:</strong> <code>LLM_BACKEND=direct</code> bypasses all proxy safeguards — no hashtag routing, no provider filtering, and <strong>no spending cap</strong>. You are billed directly by the provider you point <code>DIRECT_API_URL</code> at. This is not the same as OpenRouter's prepaid system. Use with caution and monitor your usage.
+        </div>
 
     <div class="security-callout">
         <strong>🔒 Privacy advantage:</strong> When using local models, your code never leaves your network. No API keys, no external providers, no data retention concerns. Combined with the proxy binding to <code>127.0.0.1</code>, this gives you a completely air-gapped AI coding assistant if needed. For companies working on sensitive data, this means AI-assisted coding without anything ever leaving the building. The same hashtags, the same rules, the same workflow — just running on your own hardware.
@@ -855,6 +797,20 @@ npm install -g @arabold/docs-mcp-server</code></pre>
         The four servers above are what I kept: filesystem and memory are essential, docs-mcp-server fetches docs on demand without bloat, and sequential-thinking is disabled by default because it's only useful for complex debugging sessions. <strong>Be selective with MCP servers.</strong> Each one you add should justify its token cost. When in doubt, start minimal and add only what you genuinely need.
     </div>
 
+    <h3>Which MCP Servers to Enable Per Task Type</h3>
+    <p>Not every task needs every server. Here's what to enable based on what you're doing:</p>
+    <table>
+        <thead><tr><th>Task Type</th><th>Enable</th><th>Disable</th></tr></thead>
+        <tbody>
+        <tr><td><strong>Everyday coding</strong> (editing files, terminal commands)</td><td>filesystem, memory</td><td>sequential-thinking, docs</td></tr>
+        <tr><td><strong>Debugging complex issues</strong></td><td>filesystem, memory, sequential-thinking</td><td>docs</td></tr>
+        <tr><td><strong>Researching libraries / APIs</strong></td><td>docs-mcp-server</td><td>sequential-thinking</td></tr>
+        <tr><td><strong>Quick questions</strong></td><td>None (or just memory)</td><td>Everything else</td></tr>
+        <tr><td><strong>Repo analysis</strong></td><td>filesystem</td><td>sequential-thinking, docs</td></tr>
+        </tbody>
+    </table>
+    <p style="color:var(--muted); font-size:0.9rem;"><strong>💡 Tip:</strong> Disable servers you're not using in <code>cline_mcp_settings.json</code> by adding <code>"disabled": true</code>. Fewer active servers = less token bloat per request. Enable them again when you need them.</p>
+
     <p>The <code>docs-mcp-server</code> uses SSE and is already automated in the tasks.json shown in Step 4. Sequential thinking is disabled by default — enable it only when you need structured reasoning for complex debugging. Restart Cline after saving — all MCP indicators should turn green.</p>
 
     <h2 id="step7">Step 7: House Rules & External AI Context</h2>
@@ -862,58 +818,12 @@ npm install -g @arabold/docs-mcp-server</code></pre>
     <p><em>Cline handles the coding. But for brainstorming, reviewing feedback, or weighing trade-offs, I still use external AI chats. The context block below gives them everything they need to understand my setup.</em></p>
 
     <h3>The Complete .clinerules File</h3>
-    <p>Drop this in your project root. It's the only per‑project file you'll ever need. This governs how Cline's AI models behave. <strong>Tweak it for your own stack</strong> — the Payload CMS and Next.js rules are specific to my project. The browser safety rules and coding standards are universal.</p>
-    <pre><code>- For browser tasks (screenshots, web navigation, page testing), ask me first before using any browser tool. I prefer to handle visual checks manually in my own browser. Describe what you need me to look at and I'll report back.
-
-# Project Guidelines for AI Assistants
-
-## General Conduct
-- Always ask for clarification if a request is ambiguous. Never assume.
-- Prefer simple, readable solutions over clever, complex ones.
-- Never add a new dependency without asking first.
-
-## Coding Standards
-- Write unit tests for all new public functions.
-- Prefer functional, declarative patterns over imperative ones.
-- Use meaningful variable and function names.
-
-## Workflow
-- For complex, multi-file changes, first use plan mode to outline the architecture.
-- After any file change, ensure the project still compiles and all existing tests pass.
-- After any database schema change, run `npx payload generate:types` and `npx tsc --noEmit`.
-- After any collection or global config change, update `scripts/seed.ts` to match.
-
-# Next.js & Clean Code Architecture Rules
-
-## Core Principles
-- **Empathy over Cleverness:** Write code that is easy to read and maintain for humans, not just machines.
-- **Keep it Simple:** Avoid over-engineering. Do not add abstractions before they are truly needed.
-
-## 1. Zero Hardcoded or Magic Values
-- **Constants:** Move all arbitrary strings, IDs, limits, configurations, and magic numbers into a central file.
-- **Enums & Objects:** Group related configuration values into `as const` objects or standard TypeScript enums.
-- **Env Variables:** Access all API routes, base domains, and public keys exclusively via `process.env`.
-- **No Inline Magic Numbers:** Never use raw numbers in logic calculations or conditionals.
-- **No Arbitrary Styling:** Avoid hardcoded Tailwind arbitrary values. Use global design tokens or theme scales.
-
-## 2. Directory Structure & Code Sharing
-- **Path Aliases:** Always use configured path aliases (`@/components/`, `@/utils/`) instead of relative paths.
-- `src/app/`: File-system routing, layouts, and page entry-points only.
-- `src/components/`: Reusable, isolated presentation components.
-- `src/helpers/` or `src/utils/`: Pure functions with single, isolated responsibilities.
-- `src/services/`: Centralised data-fetching layer, API callers, and third-party wrappers.
-- `src/hooks/`: Reusable custom React hooks.
-
-## 3. SOLID & Clean Code Rules
-- **Single Responsibility (SRP):** One file, one job.
-- **Open/Closed (OCP):** Build components to handle variations using React composition (`children` prop).
-- **Dependency Inversion (DIP):** Pass callback behaviors as props instead of embedding logic.
-- **Function Length:** Keep methods under 25 lines.
-
-## 4. Next.js & TypeScript Standards
-- **Server-First:** Default to React Server Components. `'use client'` only at the lowest node possible.
-- **Strict Typing:** Never use `any`. Define clear, strict `interface` properties.
-- **Data Fetching:** Isolate error bounds with clean `try/catch` and Next.js `error.tsx` boundaries.</code></pre>
+    <p>The repo includes two templates to get you started:</p>
+    <ul>
+        <li><a href="https://github.com/code20/cursor-cline-addition/blob/main/.clinerules.universal" target="_blank"><code>.clinerules.universal</code></a> — rules every project should use. Copy this to your project root as <code>.clinerules</code>.</li>
+        <li><a href="https://github.com/code20/cursor-cline-addition/blob/main/.clinerules.example" target="_blank"><code>.clinerules.example</code></a> — a full template including project-specific rules for Payload CMS + Next.js. Use this as a reference for adding your own stack-specific rules.</li>
+    </ul>
+    <p><strong>Quick start:</strong> Copy <code>.clinerules.universal</code> to your project root as <code>.clinerules</code>. Add your own project-specific rules below the universal ones. Done.</p>
 
     <h3>External AI Context Block</h3>
     <p><strong>This is for external AI chats</strong> — when you're talking to DeepSeek Chat, ChatGPT, Claude, or any other AI outside of Cline and want them to understand your development setup. Paste this at the start of any external chat conversation:</p>
@@ -976,6 +886,7 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
             <tbody>
             <tr><td><code>plan: design a new auth flow</code></td><td>DeepSeek V4 Pro, Plan mode (read-only)</td></tr>
             <tr><td><code>agent: add Stripe checkout</code></td><td>DeepSeek V4 Pro executes with full tool use (same as default)</td></tr>
+            <tr><td><code>##kimi Fix this entire feature</code></td><td>Kimi K2.5 — locked for the whole task including tool calls</td></tr>
             <tr><td><code>#pro design a new auth flow</code></td><td>DeepSeek V4 Pro — explicit alias for planning model</td></tr>
             <tr><td><code>ask: how does JWT refresh work?</code></td><td>DeepSeek V4 Pro answers without editing files</td></tr>
             <tr><td><code>#flash rename getCwd to currentWorkingDirectory</code></td><td>Gemini 2.5 Flash bulk edit</td></tr>
@@ -1041,6 +952,65 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <p style="margin-top:1rem;"><strong>🧠 The golden rule:</strong> One project = one task. Stay in it. <code>/smol</code> every 10–15 messages. <code>/newtask</code> only for genuine context switches. <code>#flash</code> for simple edits, <code>#dc</code> for questions. Close Cursor when you're done — your task will be waiting for you tomorrow.</p>
     </div>
 
+    <div class="cheatsheet-box" id="daily-driver">
+        <h3 style="margin-top:0;">📋 Your Daily Driver — Quick Reference Card</h3>
+        <p>Bookmark this. Everything you need to drive your setup without leaving Cline or checking the terminal.</p>
+
+        <h3>🔀 Model Switching</h3>
+        <table>
+            <thead><tr><th>Prefix</th><th>Scope</th><th>Model</th><th>Context</th><th>Best For</th></tr></thead>
+            <tbody>
+            <tr><td>(none)</td><td>Whole task</td><td>DeepSeek V4 Pro</td><td>1M</td><td>Everyday workhorse</td></tr>
+            <tr><td><code>#pro</code></td><td>One message</td><td>DeepSeek V4 Pro</td><td>1M</td><td>Architecture & planning</td></tr>
+            <tr><td><code>##pro</code></td><td>Whole task</td><td>DeepSeek V4 Pro</td><td>1M</td><td>Lock to Pro for session</td></tr>
+            <tr><td><code>#flash</code></td><td>One message</td><td>Gemini 2.5 Flash</td><td>1M</td><td>Cheap bulk edits</td></tr>
+            <tr><td><code>##flash</code></td><td>Whole task</td><td>Gemini 2.5 Flash</td><td>1M</td><td>Lock to Flash for session</td></tr>
+            <tr><td><code>#kimi</code></td><td>One message</td><td>Kimi K2.5</td><td>262K</td><td>Critical multi-step tasks</td></tr>
+            <tr><td><code>##kimi</code></td><td>Whole task</td><td>Kimi K2.5</td><td>262K</td><td>Lock to Kimi for session</td></tr>
+            <tr><td><code>#dc</code></td><td>One message</td><td>DeepSeek Chat</td><td>1M</td><td>Simple questions</td></tr>
+            <tr><td><code>#vision</code></td><td>One message</td><td>Perceptron Mk1</td><td>33K</td><td>SVGs, visual tasks</td></tr>
+            <tr><td><code>#ring</code></td><td>One message</td><td>Ring 2.6 1T</td><td>262K</td><td>Deep reasoning (no tools)</td></tr>
+            <tr><td><code>#v4</code></td><td>One message</td><td>DeepSeek V4 Flash</td><td>1M</td><td>Cheaper fallback</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.5rem;">💾 Context & Cost Commands</h3>
+        <table>
+            <thead><tr><th>Command</th><th>What</th><th>When</th></tr></thead>
+            <tbody>
+            <tr><td><code>/smol</code></td><td>Compress conversation</td><td>Every 10–15 messages</td></tr>
+            <tr><td><code>/newtask</code></td><td>Handover + fresh task</td><td>Switching features/projects</td></tr>
+            <tr><td>Stay in one task</td><td>Prompt caching saves 90%</td><td>Always</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.5rem;">🔧 Backend & Health</h3>
+        <table>
+            <thead><tr><th>What</th><th>Where</th></tr></thead>
+            <tbody>
+            <tr><td>Proxy health check</td><td><code>http://127.0.0.1:8000/health</code></td></tr>
+            <tr><td>Full config help</td><td><code>http://127.0.0.1:8000/v1/help</code></td></tr>
+            <tr><td>Credit usage</td><td><a href="https://openrouter.ai/activity" target="_blank">openrouter.ai/activity</a></td></tr>
+            <tr><td>Switch to local models</td><td>Set <code>LLM_BACKEND=local</code> in <code>.env</code></td></tr>
+            <tr><td>Switch to direct provider</td><td>Set <code>LLM_BACKEND=direct</code> in <code>.env</code> ⚠️ No spending cap</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.5rem;">⚠️ Context Windows</h3>
+        <table>
+            <thead><tr><th>Model</th><th>Limit</th><th>Warning</th></tr></thead>
+            <tbody>
+            <tr><td>DeepSeek V4 Pro, Chat, Flash</td><td>1M</td><td>Plenty</td></tr>
+            <tr><td>Gemini 2.5 Flash</td><td>1M</td><td>Plenty</td></tr>
+            <tr><td>Kimi K2.5</td><td>262K</td><td>Watch long sessions</td></tr>
+            <tr><td>Ring 2.6 1T</td><td>262K</td><td>Watch long sessions</td></tr>
+            <tr><td>Perceptron Mk1</td><td>33K</td><td>Short tasks only</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top:1rem;"><strong>🧠 One rule to remember:</strong> Single <code>#</code> = one message. Double <code>##</code> = whole task. Stay in one task, <code>/smol</code> regularly, and let prompt caching do the rest.</p>
+    </div>
+
     <h2 id="step9">Step 9: One‑Stop Stack Maintenance</h2>
     <p>Run this weekly health‑check script to keep your Python packages, global npm tools, and models fresh. <strong>Download both scripts from the repo and save them inside your <code>ultra-lite-proxy</code> folder — they work together.</strong></p>
 
@@ -1055,6 +1025,8 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <a href="https://raw.githubusercontent.com/code20/cursor-cline-addition/main/check_models.ps1" target="_blank">Download raw</a>
     </p>
     <p>This watcher checks whether each of your configured models still exists on OpenRouter. <strong>If a model is reported as missing, OpenRouter may have renamed or deprecated it.</strong> Check the <a href="https://openrouter.ai/models" target="_blank">OpenRouter models page</a> for the new ID, update your <code>.env</code> file, and restart the proxy. All your hashtags will continue working — they point to the variable, not the hardcoded ID.</p>
+
+    <p><strong>If a model is reported as missing:</strong> Go to <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a> and search for the replacement. OpenRouter may have renamed it (e.g., <code>deepseek/deepseek-v4</code> → <code>deepseek/deepseek-v4-pro</code>) or deprecated it in favour of a newer version. Copy the new model ID and update the corresponding line in the DEFAULTS section of your <code>.env</code>. Restart the proxy. Your hashtags will continue working — they point to the variable name, not the hardcoded ID.</p>
 
     <h3>What to Do After Running the Script</h3>
     <table>
@@ -1080,6 +1052,7 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <tr><td>Kimi K2.5 cost too high</td><td>Was default for all tool-call follow-ups (800+ requests/week)</td><td>Switched default to DeepSeek V4 Pro; Kimi reserved for <code>#kimi</code></td></tr>
         <tr><td>Connection pool starvation</td><td><code>max_keepalive_connections=1</code> too restrictive</td><td>Raised to 20 connections, 100 max</td></tr>
         <tr><td>MCP servers burning tokens</td><td>Puppeteer and Gitingest added heavy context to every request</td><td>Removed both. Screenshots done manually, repo analysis via free external AI</td></tr>
+        <tr><td>Cline update breaks the setup</td><td>Cline occasionally changes message formats or MCP config schemas</td><td>If everything was working and suddenly isn't after a Cline update, check the <a href="https://github.com/cline/cline/releases" target="_blank">Cline changelog</a>. You can pin a specific version in VS Code/Cursor: go to the Cline extension page, click the gear icon next to "Uninstall", and select "Install Another Version".</td></tr>
         </tbody>
     </table>
 

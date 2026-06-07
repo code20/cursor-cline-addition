@@ -1,0 +1,26 @@
+# ═══════════════════════════════════════════
+# Cursor Cline Addition — Universal Rules
+# ═══════════════════════════════════════════
+#
+# Copy this file to your project root as .clinerules
+# These rules apply to ANY project regardless of tech stack.
+# Add your own project-specific rules below.
+# ═══════════════════════════════════════════
+
+- For browser tasks (screenshots, web navigation, page testing), ask me first before using any browser tool. I prefer to handle visual checks manually in my own browser. Describe what you need me to look at and I'll report back.
+
+# Project Guidelines for AI Assistants
+
+## General Conduct
+- Always ask for clarification if a request is ambiguous. Never assume.
+- Prefer simple, readable solutions over clever, complex ones.
+- Never add a new dependency without asking first.
+
+## Coding Standards
+- Write unit tests for all new public functions.
+- Prefer functional, declarative patterns over imperative ones.
+- Use meaningful variable and function names.
+
+## Workflow
+- For complex, multi-file changes, first use plan mode to outline the architecture.
+- After any file change, ensure the project still compiles and all existing tests pass.

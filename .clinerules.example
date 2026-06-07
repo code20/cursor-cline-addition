@@ -1,0 +1,66 @@
+# ═══════════════════════════════════════════
+# Cursor Cline Addition — Full .clinerules Template
+# ═══════════════════════════════════════════
+#
+# Copy this file to your project root as .clinerules
+# Keep the universal rules. Replace the project-specific section below.
+# ═══════════════════════════════════════════
+
+- For browser tasks (screenshots, web navigation, page testing), ask me first before using any browser tool. I prefer to handle visual checks manually in my own browser. Describe what you need me to look at and I'll report back.
+
+# Project Guidelines for AI Assistants
+
+## General Conduct
+- Always ask for clarification if a request is ambiguous. Never assume.
+- Prefer simple, readable solutions over clever, complex ones.
+- Never add a new dependency without asking first.
+
+## Coding Standards
+- Write unit tests for all new public functions.
+- Prefer functional, declarative patterns over imperative ones.
+- Use meaningful variable and function names.
+
+## Workflow
+- For complex, multi-file changes, first use plan mode to outline the architecture.
+- After any file change, ensure the project still compiles and all existing tests pass.
+
+# ═══════════════════════════════════════════
+# PROJECT-SPECIFIC RULES BELOW
+# Replace this entire section with rules for YOUR stack
+# The rules below are for Payload CMS + Next.js — use as reference
+# ═══════════════════════════════════════════
+
+- After any database schema change, run `npx payload generate:types` and `npx tsc --noEmit`.
+- After any collection or global config change, update `scripts/seed.ts` to match.
+
+# Next.js & Clean Code Architecture Rules
+
+## Core Principles
+- **Empathy over Cleverness:** Write code that is easy to read and maintain for humans, not just machines.
+- **Keep it Simple:** Avoid over-engineering. Do not add abstractions before they are truly needed.
+
+## 1. Zero Hardcoded or Magic Values
+- **Constants:** Move all arbitrary strings, IDs, limits, configurations, and magic numbers into a central file.
+- **Enums & Objects:** Group related configuration values into `as const` objects or standard TypeScript enums.
+- **Env Variables:** Access all API routes, base domains, and public keys exclusively via `process.env`.
+- **No Inline Magic Numbers:** Never use raw numbers in logic calculations or conditionals.
+- **No Arbitrary Styling:** Avoid hardcoded Tailwind arbitrary values. Use global design tokens or theme scales.
+
+## 2. Directory Structure & Code Sharing
+- **Path Aliases:** Always use configured path aliases (`@/components/`, `@/utils/`) instead of relative paths.
+- `src/app/`: File-system routing, layouts, and page entry-points only.
+- `src/components/`: Reusable, isolated presentation components.
+- `src/helpers/` or `src/utils/`: Pure functions with single, isolated responsibilities.
+- `src/services/`: Centralised data-fetching layer, API callers, and third-party wrappers.
+- `src/hooks/`: Reusable custom React hooks.
+
+## 3. SOLID & Clean Code Rules
+- **Single Responsibility (SRP):** One file, one job.
+- **Open/Closed (OCP):** Build components to handle variations using React composition (`children` prop).
+- **Dependency Inversion (DIP):** Pass callback behaviors as props instead of embedding logic.
+- **Function Length:** Keep methods under 25 lines.
+
+## 4. Next.js & TypeScript Standards
+- **Server-First:** Default to React Server Components. `'use client'` only at the lowest node possible.
+- **Strict Typing:** Never use `any`. Define clear, strict `interface` properties.
+- **Data Fetching:** Isolate error bounds with clean `try/catch` and Next.js `error.tsx` boundaries.

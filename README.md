@@ -90,14 +90,9 @@ It covers:
 New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.config\ultra-lite-proxy
 cd $env:USERPROFILE\.config\ultra-lite-proxy
 
-# 2. Create .env with your OpenRouter key
-"OPENROUTER_API_KEY=sk-or-v1-..." | Out-File -Encoding ascii .env
-"LLM_BACKEND=openrouter" | Out-File -Encoding ascii -Append .env
-"DEFAULT_MODEL=deepseek/deepseek-v4-pro" | Out-File -Encoding ascii -Append .env
-"# PLANNING_MODEL=deepseek/deepseek-v4-pro" | Out-File -Encoding ascii -Append .env
-"# BULK_MODEL=google/gemini-2.5-flash" | Out-File -Encoding ascii -Append .env
-"# KIMI_MODEL=moonshotai/kimi-k2.5" | Out-File -Encoding ascii -Append .env
-"# V4_MODEL=deepseek/deepseek-v4-flash" | Out-File -Encoding ascii -Append .env
+# 2. Copy .env.example and add your OpenRouter key
+Copy-Item .env.example .env
+# Then edit .env and replace sk-or-v1-your-key-here with your real key
 
 # 3. Set up Python
 python -m venv venv
@@ -148,14 +143,17 @@ This project follows the **LLM Gateway Pattern** — the same architecture used 
 
 ## 📁 Files in This Repo
 
-| File               | Purpose                                |
-| ------------------ | -------------------------------------- |
-| `index.html`       | The complete blog guide                |
-| `proxy.py`         | The LLM Gateway proxy script           |
-| `update-stack.ps1` | Weekly maintenance/health-check script |
-| `check_models.ps1` | Model availability watcher             |
-| `README.md`        | You're reading it                      |
-| `LICENSE`          | MIT                                    |
+| File                    | Purpose                                                 |
+| ----------------------- | ------------------------------------------------------- |
+| `index.html`            | The complete blog guide                                 |
+| `proxy.py`              | The LLM Gateway proxy script                            |
+| `update-stack.ps1`      | Weekly maintenance/health-check script                  |
+| `check_models.ps1`      | Model availability watcher                              |
+| `README.md`             | You're reading it                                       |
+| `.env.example`          | Starter template — copy to `.env` and add your key      |
+| `.clinerules.universal` | Universal rules — copy to your project as `.clinerules` |
+| `.clinerules.example`   | Full template with project-specific examples            |
+| `LICENSE`               | MIT                                                     |
 
 ---
 

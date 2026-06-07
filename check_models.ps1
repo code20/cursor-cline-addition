@@ -6,7 +6,9 @@ $myModels = @(
     "deepseek/deepseek-v4-pro",
     "google/gemini-2.5-flash",
     "inclusionai/ring-2.6-1t",
-    "perceptron/perceptron-mk1"
+    "perceptron/perceptron-mk1",
+    "deepseek/deepseek-v4-flash",
+    "deepseek/deepseek-chat"
 )
 $missing = $myModels | Where-Object { $_ -notin $currentIds }
 if ($missing) {
