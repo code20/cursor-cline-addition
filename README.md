@@ -12,7 +12,7 @@ A complete guide to building your own multi-model AI coding assistant that runs 
 
 ## 🚀 TL;DR
 
-I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It uses the **LLM Gateway pattern** — the same architecture as enterprise tools like [LiteLLM](https://www.litellm.ai/ai-gateway) — but in a single Python script you can set up in 10 minutes. DeepSeek, Kimi, Gemini, Perceptron — all switchable by hashtag, with full privacy and a hard spending cap.
+I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It uses the **LLM Gateway pattern** — the same architecture as enterprise tools like [LiteLLM](https://www.litellm.ai/ai-gateway) — but in a single Python script you can set up in 10 minutes. Choose your model in `.env`, restart the proxy, and you're coding with DeepSeek, Kimi, Gemini, or Perceptron — full privacy, hard spending cap.
 
 **⚠️ Built and tested on Windows 11.** macOS and Linux instructions are provided as a courtesy.
 
@@ -22,7 +22,7 @@ I built a multi-model AI coding assistant that costs **£4–8/month** for typic
 
 This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
-- Routes requests to multiple AI models based on hashtags and prefixes
+- Routes requests through OpenRouter with mode prefix support (plan:, ask:, agent:)
 - Controls costs with OpenRouter's prepaid system (no surprise bills)
 - Handles retries, provider filtering, and prompt caching
 - Keeps your API keys secure on your machine
@@ -40,24 +40,25 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
 ---
 
-## 🧠 Models at Your Fingertips
+## 🧠 Recommended Models
 
-| Model             | Use via   | Best for                                  |
-| ----------------- | --------- | ----------------------------------------- |
-| DeepSeek V4 Pro   | Default   | Everyday workhorse                        |
-| Gemini 2.5 Flash  | `#flash`  | Cheap bulk edits                          |
-| Kimi K2.5         | `#kimi`   | Critical multi-step tasks                 |
-| Perceptron Mk1    | `#vision` | Screenshots & UI analysis                 |
-| DeepSeek Chat     | `#dc`     | Simple prompts on a budget                |
-| Ring 2.6 1T       | `#ring`   | Deep reasoning (no tools)                 |
-| DeepSeek V4 Pro   | `#pro`    | Explicit alias for planning               |
-| DeepSeek V4 Flash | `#v4`     | Legacy workhorse (cheaper, less reliable) |
+| Model             | Best for                                  | Context |
+| ----------------- | ----------------------------------------- | :-----: |
+| DeepSeek V4 Pro   | Everyday workhorse (recommended default)  | 1M      |
+| Gemini 2.5 Flash  | Cheap bulk edits                          | 1M      |
+| Kimi K2.5         | Critical multi-step tasks                 | 262K    |
+| Perceptron Mk1    | Screenshots & UI analysis                 | 33K     |
+| DeepSeek Chat     | Simple prompts on a budget                | 1M      |
+| Ring 2.6 1T       | Deep reasoning (no tools)                 | 262K    |
+| DeepSeek V4 Flash | Legacy workhorse (cheaper, less reliable) | 1M      |
+
+Set your model via `DEFAULT_MODEL` in `.env`, restart the proxy, and you're done. To switch models mid-session, update `.env`, restart, and start a new task with `/newtask`.
 
 ---
 
 ## 🛠️ What's Included
 
-- A local proxy (~200 lines of Python) that routes requests to OpenRouter with hashtag-based model switching
+- A local proxy (~270 lines of Python) that routes requests to OpenRouter with mode prefix support
 - MCP servers for filesystem access, memory, and documentation (kept minimal to control token costs)
 - A production-ready `.clinerules` file for code quality and browser safety
 - Maintenance scripts to keep everything fresh

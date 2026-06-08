@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unified LLM Gateway — Cursor Cline Addition v2.3 (June 2026) by @code20"""
+"""Unified LLM Gateway — Cursor Cline Addition v2.4 (June 2026) by @code20"""
 import os, json, httpx, asyncio, re
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
@@ -47,7 +47,6 @@ MODELS = {
     "dc": os.getenv("DEEPSEEK_CHAT_MODEL", ""),
 }
 
-# Verify all required models are set
 missing = [name.upper() + "_MODEL" for name, val in MODELS.items() if not val]
 if missing:
     raise RuntimeError(
@@ -57,23 +56,18 @@ if missing:
 
 DEFAULT_MODEL = MODELS["default"]
 PLANNING_MODEL = MODELS["planner"]
-BULK_MODEL = MODELS["bulk"]
-RING_MODEL = MODELS["ring"]
 VISION_MODEL = MODELS["vision"]
 
-KEYWORD_MAP = {
-    "#pro": MODELS["planner"],
-    "#v4": MODELS["v4"],
-    "#flash": MODELS["bulk"],
-    "#ring": MODELS["ring"],
-    "#vision": MODELS["vision"],
-    "#kimi": MODELS["kimi"],
-    "#dc": MODELS["dc"],
-}
-
+# Model-specific parameters
 REASONING_EFFORT = {MODELS["ring"]: "high"}
 VISION_PARAMS = {"annotation_format": "box"}
-MODE_PREFIXES = {"ask": DEFAULT_MODEL, "plan": PLANNING_MODEL, "agent": DEFAULT_MODEL}
+
+# Mode prefixes — which model handles each Cline mode
+MODE_PREFIXES = {
+    "ask": DEFAULT_MODEL,
+    "plan": PLANNING_MODEL,
+    "agent": DEFAULT_MODEL,
+}
 
 # ═══════════════════════════════════════════
 # Context Window Limits (for warnings)
@@ -90,7 +84,6 @@ CONTEXT_WINDOWS = {
 }
 
 def get_context_limit(model_id):
-    """Return context window for a model, defaulting to 128K if unknown."""
     return CONTEXT_WINDOWS.get(model_id, 131_072)
 
 # ═══════════════════════════════════════════
@@ -113,10 +106,11 @@ def get_client():
 app = FastAPI()
 
 # ═══════════════════════════════════════════
-# Routing Logic
+# Routing Logic — simple mode-based routing
 # ═══════════════════════════════════════════
 
 def detect_routing(payload):
+    """Route based on mode prefixes (plan:, ask:, agent:) — no hashtags."""
     msgs = payload.get("messages", [])
     if not msgs:
         return DEFAULT_MODEL, payload
@@ -125,34 +119,30 @@ def detect_routing(payload):
     content = last.get("content", "")
     text_to_scan = ""
 
-    # Extract text safely without mutating the message dictionary
     if isinstance(content, list):
         for block in content:
             if isinstance(block, dict) and block.get("type") == "text":
                 text = block.get("text", "")
                 task_match = re.search(r"<task>\s*(.*?)\s*</task>", text, re.DOTALL)
-                text_to_scan = task_match.group(1).strip() if task_match else text
+                if task_match:
+                    text_to_scan = task_match.group(1).strip()
+                    break
+                feedback_match = re.search(r"<feedback>\s*(.*?)\s*</feedback>", text, re.DOTALL)
+                if feedback_match:
+                    text_to_scan = feedback_match.group(1).strip()
+                    break
+                text_to_scan = text
                 break
     elif isinstance(content, str):
         text_to_scan = content
 
-    # Check for persistent model lock (##prefix)
-    if text_to_scan:
-        for tag, model in KEYWORD_MAP.items():
-            double_tag = tag.replace("#", "##")
-            if text_to_scan.startswith(double_tag):
-                return model, payload
-
-    # Check for single-message prefix modifications
+    # Mode prefix routing (plan:, ask:, agent:)
     if text_to_scan:
         for prefix, model in MODE_PREFIXES.items():
             if text_to_scan.startswith(prefix + ":"):
                 return model, payload
-        for tag, model in KEYWORD_MAP.items():
-            if text_to_scan.startswith(tag):
-                return model, payload
 
-    # Image detection — only check the last message
+    # Image detection
     if isinstance(content, list):
         for part in content:
             if isinstance(part, dict) and part.get("type") == "image_url":
@@ -171,7 +161,6 @@ async def call_backend(data: dict, request: Request):
         "X-Title": os.getenv("OR_PROXY_TITLE", "Cursor Cline Addition"),
     }
 
-    # Authentication
     if LLM_BACKEND == "openrouter":
         headers["Authorization"] = f"Bearer {OPENROUTER_KEY}"
         headers["OpenRouter-Enable-Prompt-Caching"] = "true"
@@ -183,19 +172,15 @@ async def call_backend(data: dict, request: Request):
 
     model = data.get("model", "")
 
-    # Model-specific parameters
     if model in REASONING_EFFORT:
         data["reasoning_effort"] = REASONING_EFFORT[model]
     if model == VISION_MODEL and "annotation_format" not in data:
         data.update(VISION_PARAMS)
 
-    # Provider filtering (OpenRouter only)
     if LLM_BACKEND == "openrouter" and "provider" not in data:
         data["provider"] = {"sort": "latency", "ignore": ["openai"]}
 
-    # Context window check
     context_limit = get_context_limit(model)
-    # Estimate tokens from message content (rough heuristic)
     estimated_tokens = len(json.dumps(data.get("messages", []))) // 4
     if estimated_tokens > context_limit * 0.9:
         print(f"⚠️  Context warning: ~{estimated_tokens}/{context_limit} tokens (90%+) — consider /smol")
@@ -204,10 +189,7 @@ async def call_backend(data: dict, request: Request):
     last_exception = None
     for attempt in range(MAX_RETRIES + 1):
         try:
-            async with client.stream(
-                "POST", TARGET_URL,
-                json=data, headers=headers
-            ) as resp:
+            async with client.stream("POST", TARGET_URL, json=data, headers=headers) as resp:
                 if resp.status_code in (429, 502) and attempt < MAX_RETRIES:
                     await asyncio.sleep(RETRY_DELAYS[attempt])
                     continue
@@ -216,7 +198,6 @@ async def call_backend(data: dict, request: Request):
                     error_data = {"error": f"Backend error {resp.status_code}: {error_text.decode()}"}
                     yield json.dumps(error_data).encode()
                     return
-
                 sent_any = False
                 async for chunk in resp.aiter_bytes():
                     if await request.is_disconnected():
@@ -225,7 +206,7 @@ async def call_backend(data: dict, request: Request):
                         sent_any = True
                         yield chunk
                 if not sent_any:
-                    err = {"error": "Model returned an empty response. The provider may not support the current parameters."}
+                    err = {"error": "Model returned an empty response."}
                     yield json.dumps(err).encode()
                 return
         except Exception as e:
@@ -249,13 +230,6 @@ async def chat(request: Request):
     stream_gen = call_backend(data, request)
     return StreamingResponse(stream_gen, media_type="text/event-stream")
 
-@app.get("/v1/models")
-async def models():
-    return {
-        "object": "list",
-        "data": [{"id": m, "object": "model", "owned_by": "openrouter"} for m in KEYWORD_MAP.values()]
-    }
-
 @app.get("/health")
 async def health():
     return {
@@ -268,22 +242,17 @@ async def health():
 
 @app.get("/v1/help")
 async def help_info():
-    model_list = []
-    for tag, model_id in KEYWORD_MAP.items():
-        ctx = get_context_limit(model_id)
-        model_list.append({
-            "tag": tag,
-            "double_tag": tag.replace("#", "##"),
-            "model": model_id,
-            "context_window": ctx,
-        })
     return {
         "backend": LLM_BACKEND.upper(),
         "backend_url": TARGET_URL,
         "default_model": DEFAULT_MODEL,
-        "models": model_list,
+        "planner_model": PLANNING_MODEL,
+        "context_window": get_context_limit(DEFAULT_MODEL),
+        "models_configured": list(MODELS.keys()),
         "tips": [
-            "Use #tag for one message, ##tag to lock model for the entire task",
+            "Set DEFAULT_MODEL in .env to choose your workhorse model",
+            "Use plan: prefix for architecture and planning tasks",
+            "Change DEFAULT_MODEL and restart proxy to switch models — 10 seconds",
             "/smol every 10-15 messages saves 50-70% tokens",
             "Stay in one task — prompt caching saves 90% on system overhead",
             "Check openrouter.ai/activity for credit usage",
@@ -299,13 +268,12 @@ if __name__ == "__main__":
 
     print(f"→ Backend: {LLM_BACKEND.upper()}  |  Target: {TARGET_URL}")
     print(f"→ Default model: {DEFAULT_MODEL} ({get_context_limit(DEFAULT_MODEL)//1000}K context)")
+    print(f"→ Planner model: {PLANNING_MODEL}")
+    print(f"→ Vision model: {VISION_MODEL}")
 
     if LLM_BACKEND == "direct":
         print("⚠️  DIRECT MODE — No spending cap. You are billed directly by the provider.")
-        print("   OpenRouter's prepaid system does not apply. Monitor your usage carefully.")
 
-    hashtags = "  ".join([f"{tag} → {model}" for tag, model in KEYWORD_MAP.items()])
-    print(f"→ Hashtags: {hashtags}")
     print(f"→ Health check: http://127.0.0.1:8000/health")
     print(f"→ Help: http://127.0.0.1:8000/v1/help")
 
