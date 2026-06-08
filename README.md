@@ -12,7 +12,7 @@ A complete guide to building your own multi-model AI coding assistant that runs 
 
 ## 🚀 TL;DR
 
-I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It uses the **LLM Gateway pattern** — the same architecture as enterprise tools like [LiteLLM](https://www.litellm.ai/ai-gateway) — but in a single Python script you can set up in 10 minutes. Choose your model in `.env`, restart the proxy, and you're coding with DeepSeek, Kimi, Gemini, or Perceptron — full privacy, hard spending cap.
+I built a multi-model AI coding assistant that costs **£4–8/month** for typical use. It uses the **LLM Gateway pattern** — the same architecture as enterprise tools like [LiteLLM](https://www.litellm.ai/ai-gateway) — but in a single Python script you can set up in 30-45 minutes. Choose your model in `.env`, restart the proxy, and you're coding with DeepSeek, Kimi, Gemini, or Perceptron — full privacy, hard spending cap.
 
 **⚠️ Built and tested on Windows 11.** macOS and Linux instructions are provided as a courtesy.
 
@@ -22,10 +22,13 @@ I built a multi-model AI coding assistant that costs **£4–8/month** for typic
 
 This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
-- Routes requests through OpenRouter with mode prefix support (plan:, ask:, agent:)
+- Routes requests through OpenRouter using mode prefixes (`plan:`, `ask:`, `agent:`) and automatic image detection
+- Keeps configuration dead simple: only 3 active models — `DEFAULT_MODEL`, `PLANNING_MODEL`, `VISION_MODEL`
+- Includes a SWAP MENU of pre‑configured model IDs so you never have to look up model names
 - Controls costs with OpenRouter's prepaid system (no surprise bills)
 - Handles retries, provider filtering, and prompt caching
 - Keeps your API keys secure on your machine
+- Detects if multiple backends are accidentally active and stops with a clear error
 - Optionally route to your own local models (Ollama, vLLM, LM Studio, etc.) instead of OpenRouter
 
 ---
@@ -40,25 +43,33 @@ This isn't just a proxy — it's a **self-built LLM Gateway** that:
 
 ---
 
-## 🧠 Recommended Models
+## 🧠 How Model Switching Works (The Roster Pattern)
 
-| Model             | Best for                                  | Context |
-| ----------------- | ----------------------------------------- | :-----: |
-| DeepSeek V4 Pro   | Everyday workhorse (recommended default)  | 1M      |
-| Gemini 2.5 Flash  | Cheap bulk edits                          | 1M      |
-| Kimi K2.5         | Critical multi-step tasks                 | 262K    |
-| Perceptron Mk1    | Screenshots & UI analysis                 | 33K     |
-| DeepSeek Chat     | Simple prompts on a budget                | 1M      |
-| Ring 2.6 1T       | Deep reasoning (no tools)                 | 262K    |
-| DeepSeek V4 Flash | Legacy workhorse (cheaper, less reliable) | 1M      |
+The proxy uses exactly three models at any time:
 
-Set your model via `DEFAULT_MODEL` in `.env`, restart the proxy, and you're done. To switch models mid-session, update `.env`, restart, and start a new task with `/newtask`.
+- `DEFAULT_MODEL` → handles plain prompts, `ask:`, `agent:`
+- `PLANNING_MODEL` → used when you type `plan:` before your prompt
+- `VISION_MODEL` → auto-detected for images
+
+Your `.env` contains a commented SWAP MENU of pre-configured model IDs (DeepSeek, Gemini, Kimi, etc.). To switch models, copy any ID from that menu into `DEFAULT_MODEL`, save, and restart the proxy. No Cline settings to change, no dropdowns to navigate. The new model takes effect immediately.
+
+| Role              | Model ID                     | Context |
+| ----------------- | ---------------------------- | :-----: |
+| Active: Workhorse | `deepseek/deepseek-v4-pro`   |   1M    |
+| Active: Planner   | `deepseek/deepseek-v4-pro`   |   1M    |
+| Active: Vision    | `perceptron/perceptron-mk1`  |   33K   |
+| Swap: Bulk Edits  | `google/gemini-2.5-flash`    |   1M    |
+| Swap: Critical    | `moonshotai/kimi-k2.5`       |  262K   |
+| Swap: Reasoning   | `inclusionai/ring-2.6-1t`    |  262K   |
+| Swap: Budget Chat | `deepseek/deepseek-chat`     |   1M    |
+| Swap: Legacy      | `deepseek/deepseek-v4-flash` |   1M    |
 
 ---
 
 ## 🛠️ What's Included
 
-- A local proxy (~270 lines of Python) that routes requests to OpenRouter with mode prefix support
+- A local proxy (~280 lines of Python) that routes requests to OpenRouter with mode prefix support and image detection
+- Backend conflict detection — refuses to start if multiple backends are uncommented
 - MCP servers for filesystem access, memory, and documentation (kept minimal to control token costs)
 - A production-ready `.clinerules` file for code quality and browser safety
 - Maintenance scripts to keep everything fresh

@@ -8,6 +8,29 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ═══════════════════════════════════════════
+# Backend Conflict Detection
+# ═══════════════════════════════════════════
+
+# Check if multiple backends are accidentally uncommented
+# by testing for their required keys
+_backends_active = []
+if os.getenv("OPENROUTER_API_KEY") and os.getenv("OPENROUTER_API_KEY") != "sk-or-v1-your-key-here":
+    _backends_active.append("openrouter")
+if os.getenv("DIRECT_API_KEY") and os.getenv("DIRECT_API_KEY") != "sk-ant-...":
+    _backends_active.append("direct")
+# local is detected by LLM_BACKEND value + no cloud keys present
+if os.getenv("LLM_BACKEND") == "local":
+    _backends_active.append("local")
+
+if len(_backends_active) > 1:
+    raise RuntimeError(
+        f"Multiple backends detected: {', '.join(_backends_active)}.\n"
+        "You can only use ONE backend at a time.\n"
+        "Open your .env file, comment out the backends you're not using,\n"
+        "and leave only one backend section uncommented."
+    )
+
+# ═══════════════════════════════════════════
 # Backend Selection
 # ═══════════════════════════════════════════
 
@@ -33,33 +56,30 @@ else:
     OPENROUTER_KEY = None
 
 # ═══════════════════════════════════════════
-# Model Configuration — all from .env
+# Model Configuration — only the 3 active models
 # ═══════════════════════════════════════════
 
-MODELS = {
-    "default": os.getenv("DEFAULT_MODEL", ""),
-    "planner": os.getenv("PLANNING_MODEL", ""),
-    "bulk": os.getenv("BULK_MODEL", ""),
-    "ring": os.getenv("RING_MODEL", ""),
-    "vision": os.getenv("VISION_MODEL", ""),
-    "kimi": os.getenv("KIMI_MODEL", ""),
-    "v4": os.getenv("V4_MODEL", ""),
-    "dc": os.getenv("DEEPSEEK_CHAT_MODEL", ""),
-}
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "")
+PLANNING_MODEL = os.getenv("PLANNING_MODEL", "")
+VISION_MODEL = os.getenv("VISION_MODEL", "")
 
-missing = [name.upper() + "_MODEL" for name, val in MODELS.items() if not val]
+# Validate all 3 active models are set
+_active_models = {
+    "DEFAULT_MODEL": DEFAULT_MODEL,
+    "PLANNING_MODEL": PLANNING_MODEL,
+    "VISION_MODEL": VISION_MODEL,
+}
+missing = [name for name, val in _active_models.items() if not val]
 if missing:
     raise RuntimeError(
         f"Missing required model(s) in .env: {', '.join(missing)}. "
-        "Check your .env file — every model must be declared in the DEFAULTS section."
+        "Check your .env file — DEFAULT_MODEL, PLANNING_MODEL, and VISION_MODEL must all be set."
     )
 
-DEFAULT_MODEL = MODELS["default"]
-PLANNING_MODEL = MODELS["planner"]
-VISION_MODEL = MODELS["vision"]
-
 # Model-specific parameters
-REASONING_EFFORT = {MODELS["ring"]: "high"}
+REASONING_EFFORT = {
+    "inclusionai/ring-2.6-1t": "high",
+}
 VISION_PARAMS = {"annotation_format": "box"}
 
 # Mode prefixes — which model handles each Cline mode
@@ -106,11 +126,11 @@ def get_client():
 app = FastAPI()
 
 # ═══════════════════════════════════════════
-# Routing Logic — simple mode-based routing
+# Routing Logic — mode prefixes + image detection
 # ═══════════════════════════════════════════
 
 def detect_routing(payload):
-    """Route based on mode prefixes (plan:, ask:, agent:) — no hashtags."""
+    """Route based on mode prefixes (plan:, ask:, agent:) and image detection."""
     msgs = payload.get("messages", [])
     if not msgs:
         return DEFAULT_MODEL, payload
@@ -236,8 +256,11 @@ async def health():
         "status": "ok",
         "backend": LLM_BACKEND,
         "target": TARGET_URL,
-        "default_model": DEFAULT_MODEL,
-        "models_configured": len(MODELS),
+        "active_models": {
+            "default": DEFAULT_MODEL,
+            "planner": PLANNING_MODEL,
+            "vision": VISION_MODEL,
+        },
     }
 
 @app.get("/v1/help")
@@ -247,12 +270,16 @@ async def help_info():
         "backend_url": TARGET_URL,
         "default_model": DEFAULT_MODEL,
         "planner_model": PLANNING_MODEL,
+        "vision_model": VISION_MODEL,
         "context_window": get_context_limit(DEFAULT_MODEL),
-        "models_configured": list(MODELS.keys()),
         "tips": [
             "Set DEFAULT_MODEL in .env to choose your workhorse model",
-            "Use plan: prefix for architecture and planning tasks",
+            "Use plan: prefix for architecture and planning tasks — uses PLANNING_MODEL, read-only",
+            "Use ask: prefix for questions without editing files — uses DEFAULT_MODEL",
+            "Use agent: prefix to explicitly enter Act mode with full tool access — uses DEFAULT_MODEL",
+            "No prefix = Act mode with full tools — uses DEFAULT_MODEL",
             "Change DEFAULT_MODEL and restart proxy to switch models — 10 seconds",
+            "See .env SWAP MENU for pre-configured model IDs to swap in",
             "/smol every 10-15 messages saves 50-70% tokens",
             "Stay in one task — prompt caching saves 90% on system overhead",
             "Check openrouter.ai/activity for credit usage",
@@ -269,7 +296,7 @@ if __name__ == "__main__":
     print(f"→ Backend: {LLM_BACKEND.upper()}  |  Target: {TARGET_URL}")
     print(f"→ Default model: {DEFAULT_MODEL} ({get_context_limit(DEFAULT_MODEL)//1000}K context)")
     print(f"→ Planner model: {PLANNING_MODEL}")
-    print(f"→ Vision model: {VISION_MODEL}")
+    print(f"→ Vision model:  {VISION_MODEL}")
 
     if LLM_BACKEND == "direct":
         print("⚠️  DIRECT MODE — No spending cap. You are billed directly by the provider.")

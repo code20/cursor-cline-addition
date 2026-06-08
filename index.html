@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Build your own multi-model AI coding assistant for £4–8/month. Step-by-step guide with Cursor, Cline, and OpenRouter. No lock-in, full privacy, tested on Windows 11." />
+    <meta name="description" content="Build your own multi-model AI coding assistant for £4–8/month. Step-by-step guide with Cursor, Cline, and OpenRouter. No single-model lock-in, full privacy, tested on Windows 11." />
     <meta property="og:title" content="Cursor Cline Addition — A £4–8/Month Cursor Ultra Alternative" />
     <meta property="og:description" content="One API key, one proxy, the best open-weight models. Full privacy, zero surprises, and pocket-change pricing for everyday developers." />
     <meta property="og:type" content="article" />
@@ -273,9 +273,13 @@
     <p class="subtitle">I Built a Cursor Ultra Alternative for £4–8/Month — 2026 OpenRouter Guide</p>
 
     <div class="tldr">
-        <strong>TL;DR:</strong> I built a multi-model AI coding assistant that runs inside Cursor (free) and costs <strong>£4–8/month</strong> for typical use. It's private, battle-tested with a real production app, and gives you access to DeepSeek, Kimi, Gemini, and more — all driven by the same proxy. This guide walks you through every step. <strong>No lock-in, no surprise bills.</strong> Just a smarter way to code with AI.<br /><br />
+        <strong>TL;DR:</strong> I built a multi-model AI coding assistant that runs inside Cursor (free) and costs <strong>£4–8/month</strong> for typical use. The proxy itself takes about <strong>10 minutes</strong> to set up; the full guide with MCP servers, <code>.clinerules</code>, and maintenance scripts takes 30–45 minutes — pick what you need. It's private, battle-tested with a real production app, and gives you access to DeepSeek, Kimi, Gemini, and more. <strong>No single-model lock-in.</strong> Switch providers by changing one line in <code>.env</code> — OpenRouter, local models, or direct API access all supported.<br /><br />
         <strong>⚠️ Tested on Windows 11.</strong> macOS and Linux instructions are provided as a courtesy — they follow standard conventions but haven't been battle-tested on those platforms.<br /><br />
         <em style="color:#94a3b8; font-size:0.9rem;">This guide reflects what worked for me. Read the policies yourself, apply common sense, and use at your own discretion.</em>
+    </div>
+
+    <div class="security-callout">
+        <strong>🔒 Privacy posture:</strong> This project defaults to <strong>local-only operation</strong> when <code>LLM_BACKEND</code> is unset — no data leaves your machine. Setting <code>LLM_BACKEND=openrouter</code> is an <strong>explicit opt-in</strong> to cloud routing. The local-first default is a safety net, not an accident. If privacy is critical, use the <code>local</code> backend with Ollama or vLLM — your code never touches an external network.
     </div>
 
     <p style="font-size:1.05rem; color:#cbd5e1; line-height:1.8;">
@@ -283,20 +287,22 @@
         So I built my own.<br /><br />
         This blog documents the entire journey: setting up a multi‑model AI coding assistant that runs inside Cursor (free) and Cline, powered by OpenRouter. It costs the typical developer around £4–8/month, gives me full privacy and control, and handles everything from quick edits to complex agentic coding. I've battle‑tested it by building a complete production app — a car‑hire website with a full CMS, admin panel, and documentation.<br /><br />
         The result is a genuinely powerful, private, and affordable setup that lets me learn, experiment, and ship side projects without worrying about a surprise bill at the end of the month. I wrote this guide so you can do the same — whether you're learning on the side after work, hacking on a passion project, or just tired of being locked into expensive subscriptions.<br /><br />
-        Everything here is real, tested, and working on <strong>Windows 11</strong>. No hacks, no lock‑in, just a smarter way to code with AI.
+        Everything here is real, tested, and working on <strong>Windows 11</strong>. No hacks, no single-model lock‑in, just a smarter way to code with AI.
     </p>
 
     <div class="callout">
-        <strong>You're about to build an LLM Gateway.</strong> This is the same architectural pattern used by tools like <a href="https://www.litellm.ai/ai-gateway" target="_blank">LiteLLM</a> — a single endpoint that routes requests across multiple AI providers, controls costs, handles retries, and keeps your API keys secure. Companies pay for managed versions of this. You're going to build your own, for free, in about 10 minutes. No bloat, no recurring fees, no 100,000‑line codebase — just a single Python script that puts you in control.
+        <strong>You're about to build an LLM Gateway.</strong> This is the same architectural pattern used by tools like <a href="https://www.litellm.ai/ai-gateway" target="_blank">LiteLLM</a> — a single endpoint that routes requests across multiple AI providers, controls costs, handles retries, and keeps your API keys secure. Companies pay for managed versions of this. You're going to build your own, for free, in about 10 minutes for the proxy itself. No bloat, no recurring fees, no 100,000‑line codebase — just a single Python script that puts you in control.
     </div>
 
     <details class="toc" open>
         <summary>📑 Table of Contents</summary>
         <ol>
             <li><a href="#cost-comparison">What You'll Actually Pay</a></li>
+            <li><a href="#roster-pattern">The Model Roster Pattern</a></li>
             <li><a href="#core-team">The Model Lineup</a></li>
             <li><a href="#cost-data">Real-World Cost Data (Power User)</a></li>
             <li><a href="#why-proxy">Why the Proxy?</a></li>
+            <li><a href="#architecture-diagram">Architecture — How It All Connects</a></li>
             <li><a href="#prerequisites">Prerequisites</a></li>
             <li><a href="#step1">Step 1: OpenRouter Account Setup</a></li>
             <li><a href="#step2">Step 2: Project Directory & Environment</a></li>
@@ -327,23 +333,53 @@
         </tbody>
     </table>
 
+    <p style="color:var(--muted); font-size:0.9rem;"><strong>⚠️ Usage note:</strong> The £4–8/month range reflects typical developer usage — feature work, bug fixes, and occasional refactoring. Heavy agentic workloads with long-running chains, high concurrency, or multi-model usage will increase costs. See the <a href="#cost-data">Real-World Cost Data</a> section for a detailed breakdown from a power-user month (81.5M tokens, £14.72).</p>
+
     <div class="callout">
         <strong>The headline number is £4–8/month for a typical developer.</strong> That's less than a single takeaway, and 96% cheaper than Cursor Ultra. Even at the extreme end — building a complete CMS with admin panel, seed scripts, and full documentation — the month came in at £14.72. The prepaid system on OpenRouter means you'll never wake up to a surprise bill.
     </div>
 
+    <h2 id="roster-pattern">The Model Roster Pattern — How Switching Actually Works</h2>
+    <p>After extensive testing, we discovered Cline only passes three routing signals to the API: <code>plan:</code>, <code>ask:</code>, and <code>agent:</code>. Hashtags, custom prefixes, and inline directives are silently stripped. Rather than fight the tool, we embraced its constraints.</p>
+    
+    <p style="color:var(--muted); font-size:0.9rem;"><strong>📝 Observed behavior as of June 2026.</strong> Cline's message handling may change with updates. Verify routing behavior after major Cline upgrades by checking the proxy terminal output — it prints every routing decision.</p>
+
+    <h3>The Design</h3>
+    <p>Your <code>.env</code> file defines exactly <strong>three active models</strong> at any time:</p>
+    <ul>
+        <li><strong>DEFAULT_MODEL</strong> — your daily driver for everything: plain prompts, <code>ask:</code>, <code>agent:</code></li>
+        <li><strong>PLANNING_MODEL</strong> — used when you type <code>plan:</code> before your prompt</li>
+        <li><strong>VISION_MODEL</strong> — automatically detected when you include images</li>
+    </ul>
+    <p>Inside the OpenRouter section of <code>.env</code> there's also a <strong>SWAP MENU</strong> — a commented list of pre‑configured model IDs (DeepSeek, Gemini, Kimi, Ring, etc.). It's just a quick‑reference so you never have to look up model IDs on the OpenRouter site.</p>
+
+    <h3>How to Switch Models</h3>
+    <ol>
+        <li>Open <code>.env</code></li>
+        <li>Copy any model ID from the SWAP MENU</li>
+        <li>Paste it into <code>DEFAULT_MODEL</code></li>
+        <li>Save and restart the proxy</li>
+    </ol>
+    <p><strong>Takes 10 seconds. No Cline settings to change. No dropdowns to navigate.</strong> The new model takes effect immediately — continue your task or start a fresh one with <code>/newtask</code>.</p>
+
+    <div class="callout">
+        <strong>Why this is better than inline switching:</strong> Inline model switching (hashtags, directives) creates ambiguity — "which model am I on right now?" The roster pattern eliminates that. One model at a time, clearly declared in <code>.env</code>. Switch between tasks, not within them. It's a small habit change that removes an entire class of routing bugs and makes debugging trivial: check <code>.env</code>, you know exactly what model is active.
+    </div>
+
     <h2 id="core-team">The Model Lineup (June 2026)</h2>
-<p>These are the recommended models for the proxy. <strong>DeepSeek V4 Pro is the recommended default</strong> — 54% cheaper on output than Kimi K2.5 and handles all tool calls reliably. You choose which model to use by setting <code>DEFAULT_MODEL</code> in your <code>.env</code> file, then restart the proxy. To switch models mid-session, update <code>.env</code>, restart the proxy, and start a new task with <code>/newtask</code>. All model IDs can be overridden in <code>.env</code> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy.</p>
+    <p><strong>DeepSeek V4 Pro is the recommended default</strong> — 54% cheaper on output than Kimi K2.5 and handles all tool calls reliably. The table below lists all the models you'll find in the SWAP MENU. Only the first three are active by default; the rest are pre‑configured replacements for <code>DEFAULT_MODEL</code>.</p>
 
     <table>
-        <thead><tr><th>Role</th><th>Model</th><th>Price /1M tokens</th><th>Context</th></tr></thead>
+        <thead><tr><th>Role</th><th>Model ID</th><th>Price /1M tokens</th><th>Context</th></tr></thead>
         <tbody>
-        <tr><td><span class="badge blue">Workhorse</span></td><td>DeepSeek V4 Pro</td><td>$0.44 / $0.87</td><td>1M</td></tr>
-        <tr><td><span class="badge green">Bulk & Speed</span></td><td>Gemini 2.5 Flash</td><td>$0.30 / $2.50</td><td>1M</td></tr>
-        <tr><td><span class="badge blue">Vision</span></td><td>Perceptron Mk1</td><td>$0.15 / $1.50</td><td>33K</td></tr>
-        <tr><td><span class="badge red">Critical Tasks</span></td><td>Kimi K2.5</td><td>$0.40 / $1.98</td><td>262K</td></tr>
-        <tr><td><span class="badge orange">Deep Reasoning</span></td><td>Ring 2.6 1T</td><td>$0.075 / $0.625</td><td>262K — no tool calls</td></tr>
-        <tr><td><span class="badge blue">Budget Chat</span></td><td>DeepSeek Chat</td><td>$0.14 / $0.28</td><td>1M</td></tr>
-        <tr><td><span class="badge blue">Legacy Workhorse</span></td><td>DeepSeek V4 Flash</td><td>$0.14 / $0.28</td><td>1M — cheaper but less reliable</td></tr>
+        <tr><td><span class="badge blue">Active: Workhorse</span></td><td><code>deepseek/deepseek-v4-pro</code></td><td>$0.44 / $0.87</td><td>1M</td></tr>
+        <tr><td><span class="badge blue">Active: Planner</span></td><td><code>deepseek/deepseek-v4-pro</code> (same as DEFAULT_MODEL)</td><td>$0.44 / $0.87</td><td>1M</td></tr>
+        <tr><td><span class="badge blue">Active: Vision</span></td><td><code>perceptron/perceptron-mk1</code></td><td>$0.15 / $1.50</td><td>33K</td></tr>
+        <tr><td><span class="badge green">Swap: Bulk & Speed</span></td><td><code>google/gemini-2.5-flash</code></td><td>$0.30 / $2.50</td><td>1M</td></tr>
+        <tr><td><span class="badge red">Swap: Critical Tasks</span></td><td><code>moonshotai/kimi-k2.5</code></td><td>$0.40 / $1.98</td><td>262K</td></tr>
+        <tr><td><span class="badge orange">Swap: Deep Reasoning</span></td><td><code>inclusionai/ring-2.6-1t</code></td><td>$0.075 / $0.625</td><td>262K — no tool calls</td></tr>
+        <tr><td><span class="badge blue">Swap: Budget Chat</span></td><td><code>deepseek/deepseek-chat</code></td><td>$0.14 / $0.28</td><td>1M</td></tr>
+        <tr><td><span class="badge blue">Swap: Legacy Workhorse</span></td><td><code>deepseek/deepseek-v4-flash</code></td><td>$0.14 / $0.28</td><td>1M — cheaper but less reliable</td></tr>
         </tbody>
     </table>
 
@@ -364,7 +400,7 @@
     </table>
 
     <div class="callout">
-        <strong>The takeaway:</strong> Even if you code like a maniac and ship an entire production system, you'll pay less than £15/month. If you're a typical developer doing feature work and bug fixes, you'll land in the £4–8 range. That's 96% less than Cursor Ultra — with better models, full privacy, and zero vendor lock-in.
+        <strong>The takeaway:</strong> Even if you code like a maniac and ship an entire production system, you'll pay less than £15/month. If you're a typical developer doing feature work and bug fixes, you'll land in the £4–8 range. That's 96% less than Cursor Ultra — with better models, full privacy, and no single-model lock-in.
     </div>
 
     <h2 id="why-proxy">Why the Proxy? (vs. Direct Cline + OpenRouter)</h2>
@@ -373,14 +409,106 @@
     <table>
         <thead><tr><th>Feature</th><th>Direct Setup</th><th>With the Proxy</th></tr></thead>
         <tbody>
-        <tr><td><strong>Switch models</strong></td><td>Open Cline settings → change dropdown → save</td><td>Edit <code>DEFAULT_MODEL</code> in <code>.env</code>, restart proxy</td></tr>
+        <tr><td><strong>Switch models</strong></td><td>Open Cline settings → change dropdown → save</td><td>Copy a model ID from the SWAP MENU into <code>DEFAULT_MODEL</code> in <code>.env</code>, restart proxy — 10 seconds.</td></tr>
         <tr><td><strong>Hard spending cap</strong></td><td>Whatever OpenRouter charges</td><td>Prepaid credits — when they run out, everything stops</td></tr>
         <tr><td><strong>API key security</strong></td><td>Stored in Cline settings</td><td>Stored in a local <code>.env</code> file — the proxy injects it, Cline never sees it</td></tr>
         <tr><td><strong>Local models</strong></td><td>Not possible with OpenRouter setup</td><td>One-line <code>.env</code> change — zero cost, absolute privacy</td></tr>
         </tbody>
     </table>
 
-    <p>The direct setup is perfectly fine. The proxy is an upgrade — easy model switching via <code>.env</code>, cost protection, better privacy, and the flexibility to use local models when you want complete air-gapped coding. It takes 10 minutes to set up and you never have to think about it again.</p>
+    <p>The direct setup is perfectly fine. The proxy is an upgrade — easy model switching via <code>.env</code>, cost protection, better privacy, and the flexibility to use local models when you want complete air-gapped coding.</p>
+
+    <h2 id="architecture-diagram">Architecture — How It All Connects</h2>
+    
+    <svg xmlns="http://www.w3.org/2000/svg" width="860" height="420" viewBox="0 0 860 420" style="display:block; margin:1.5rem auto; max-width:100%;">
+      <style>
+        .box { fill:#1e293b; stroke:#334155; stroke-width:1.5; rx:6; }
+        .box-active { fill:#1e3a5f; stroke:#38bdf8; stroke-width:1.5; rx:6; }
+        .text-title { font: 600 13px/1.2 "Inter", system-ui, sans-serif; fill:#f1f5f9; }
+        .text-label { font: 400 11px/1.2 "Inter", system-ui, sans-serif; fill:#94a3b8; }
+        .text-small { font: 400 10px/1.2 "Inter", system-ui, sans-serif; fill:#64748b; }
+        .arrow { stroke:#475569; stroke-width:1.5; fill:none; marker-end:url(#arrowhead); }
+        .arrow-dashed { stroke:#475569; stroke-width:1.2; fill:none; stroke-dasharray:5,5; marker-end:url(#arrowhead); }
+        .section-label { font: 600 11px/1.2 "Inter", system-ui, sans-serif; fill:#64748b; letter-spacing:1px; }
+      </style>
+
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+        </marker>
+      </defs>
+
+      <!-- Section: Your Machine -->
+      <text x="30" y="22" class="section-label">YOUR MACHINE</text>
+      <line x1="30" y1="28" x2="220" y2="28" stroke="#334155" stroke-width="1"/>
+
+      <!-- Cursor -->
+      <rect x="30" y="40" width="120" height="55" class="box"/>
+      <text x="90" y="62" text-anchor="middle" class="text-title">Cursor</text>
+      <text x="90" y="78" text-anchor="middle" class="text-small">(free editor)</text>
+
+      <!-- Cline -->
+      <rect x="200" y="40" width="130" height="55" class="box"/>
+      <text x="265" y="62" text-anchor="middle" class="text-title">Cline Extension</text>
+      <text x="265" y="78" text-anchor="middle" class="text-small">agentic coding</text>
+
+      <!-- Proxy -->
+      <rect x="400" y="35" width="180" height="70" class="box-active"/>
+      <text x="490" y="56" text-anchor="middle" class="text-title">Proxy (FastAPI)</text>
+      <text x="490" y="72" text-anchor="middle" class="text-label">127.0.0.1:8000</text>
+      <text x="490" y="88" text-anchor="middle" class="text-small">routing · retries · caching · .env</text>
+
+      <!-- MCP Servers -->
+      <rect x="400" y="135" width="180" height="65" class="box"/>
+      <text x="490" y="155" text-anchor="middle" class="text-title">MCP Servers</text>
+      <text x="490" y="172" text-anchor="middle" class="text-label">filesystem · memory · docs</text>
+      <text x="490" y="188" text-anchor="middle" class="text-small">tools for Cline (bypass proxy)</text>
+
+      <!-- Active Models -->
+      <rect x="200" y="230" width="380" height="80" class="box"/>
+      <text x="390" y="252" text-anchor="middle" class="text-title">Active Models (3) — from .env</text>
+      <text x="390" y="272" text-anchor="middle" class="text-label">DEFAULT_MODEL · PLANNING_MODEL · VISION_MODEL</text>
+      <text x="390" y="292" text-anchor="middle" class="text-small">plain prompts, ask:, agent: → DEFAULT &nbsp;|&nbsp; plan: → PLANNING &nbsp;|&nbsp; images → VISION</text>
+
+      <!-- Swap Menu -->
+      <rect x="200" y="325" width="380" height="50" class="box"/>
+      <text x="390" y="346" text-anchor="middle" class="text-title">SWAP MENU (5 pre-configured IDs)</text>
+      <text x="390" y="364" text-anchor="middle" class="text-small">Gemini Flash · Kimi K2.5 · Ring 2.6 · DeepSeek Chat · DeepSeek V4 Flash</text>
+
+      <!-- Section: Cloud -->
+      <text x="640" y="22" class="section-label">CLOUD / LOCAL</text>
+      <line x1="640" y1="28" x2="830" y2="28" stroke="#334155" stroke-width="1"/>
+
+      <!-- OpenRouter -->
+      <rect x="640" y="40" width="190" height="55" class="box"/>
+      <text x="735" y="62" text-anchor="middle" class="text-title">OpenRouter</text>
+      <text x="735" y="78" text-anchor="middle" class="text-small">or local / direct backend</text>
+
+      <!-- Models -->
+      <rect x="640" y="120" width="190" height="55" class="box"/>
+      <text x="735" y="142" text-anchor="middle" class="text-title">AI Models</text>
+      <text x="735" y="158" text-anchor="middle" class="text-small">DeepSeek · Gemini · Kimi · Ring · ...</text>
+
+      <!-- Arrows -->
+      <path d="M150 67 L200 67" class="arrow"/>
+      <path d="M330 67 L400 67" class="arrow"/>
+      <path d="M580 67 L640 67" class="arrow"/>
+      <path d="M490 105 L490 135" class="arrow-dashed"/>
+      <path d="M735 95 L735 120" class="arrow"/>
+      <path d="M580 265 L640 100" class="arrow" style="marker-end:none; stroke-dasharray:4,4;"/>
+      
+      <!-- .env arrow label -->
+      <text x="608" y="185" class="text-small" style="font-size:9px;">reads</text>
+      <text x="608" y="197" class="text-small" style="font-size:9px;">.env</text>
+
+      <!-- Flow labels -->
+      <text x="175" y="58" text-anchor="middle" class="text-small" style="font-size:9px;">→</text>
+      <text x="365" y="58" text-anchor="middle" class="text-small" style="font-size:9px;">→</text>
+      <text x="610" y="58" text-anchor="middle" class="text-small" style="font-size:9px;">→</text>
+      <text x="480" y="125" text-anchor="middle" class="text-small" style="font-size:9px;">tool calls (not proxied)</text>
+    </svg>
+
+    <p><strong>Flow:</strong> Cursor → Cline → Proxy (127.0.0.1:8000) → OpenRouter → AI Models. The proxy reads <code>.env</code> to decide which model handles each request based on mode prefixes and image detection. MCP servers give Cline tools (filesystem, memory, docs) but don't touch the proxy. The SWAP MENU provides pre-configured model IDs for quick switching.</p>
 
     <h2 id="prerequisites">Prerequisites</h2>
     <ul>
@@ -409,9 +537,20 @@
         <li>Copy the key (<code>sk-or-v1-...</code>).</li>
         <li>Go to <strong>Billing</strong> → ensure <strong>Auto Top-Up is disabled</strong>.</li>
         <li>Purchase <strong>$20 in credits</strong> (one-time, no recurring).</li>
-        <li><strong>Guardrails</strong>: In Settings → Privacy → Guardrails, create a budget with a $20 monthly cap. Enable Prompt Injection Detection set to "Flag", and Sensitive Info Detection: only "Credit Card" and "SSN" checked (set to "Redact"). Add a custom pattern for your API key (<code>sk-or-v1-[a-zA-Z0-9]{32,}</code>) and set it to <strong>Block</strong>.</li>
+        <li><strong>Guardrails</strong>: In Settings → Privacy → Guardrails, create a budget with a $20 monthly cap. Enable Prompt Injection Detection set to "Flag", and Sensitive Info Detection: only "Credit Card" and "SSN" checked (set to "Redact").</li>
         <li>Under <strong>Settings → Privacy</strong>, ensure "Zero Data Retention" or all training/logging toggles are off.</li>
     </ol>
+
+    <details class="inline-script">
+        <summary>🔧 Advanced: API Key Leak Prevention (Optional)</summary>
+        <p>OpenRouter's Guardrails can detect if your API key accidentally appears in a prompt. This is belt-and-suspenders — your key is stored in <code>.env</code> and never leaves your machine, but if you want extra protection:</p>
+        <ul>
+            <li>In Settings → Privacy → Guardrails, add a custom pattern: <code>sk-or-v1-[a-zA-Z0-9]{32,}</code></li>
+            <li>Set the action to <strong>Block</strong></li>
+        </ul>
+        <p><strong>Important:</strong> Client-side filtering is not a substitute for proper secret management. Use vaults, key rotation, and provider-side restrictions for production workloads. This regex is a convenience, not a security guarantee.</p>
+    </details>
+
     <p>Now you have a single API key, a hard spending cap, and full privacy controls.</p>
 
     <h2 id="step2">Step 2: Project Directory & Environment</h2>
@@ -419,7 +558,7 @@
     <p>We'll store the proxy — and your API key — in a single global location. <strong>No per‑project <code>.env</code> files.</strong> No risk of accidentally committing secrets. The repo includes an <a href="https://github.com/code20/cursor-cline-addition/blob/main/.env.example" target="_blank"><code>.env.example</code></a> — copy it to <code>.env</code>, add your key, and you're done. The only file your projects ever need is a <code>.clinerules</code>.</p>
 
     <div class="security-callout">
-        <strong>Why this is safer than per-project .env files:</strong> Your API key lives in a single global location (<code>~/.config/ultra-lite-proxy/.env</code>), not scattered across every project folder. That means:<br /><br />
+        <strong>Why a single global .env is safer than per-project files:</strong> Your API key lives in one protected location (<code>~/.config/ultra-lite-proxy/.env</code>), not scattered across every project folder. This is a deliberate design choice — one well-protected file beats many scattered ones. That means:<br /><br />
         ✅ You never accidentally commit it to a project repo<br />
         ✅ You never need to add <code>.env</code> to every project's <code>.gitignore</code><br />
         ✅ One <code>chmod 600</code> / <code>icacls</code> protects it everywhere<br />
@@ -516,7 +655,7 @@ fi
 HOOK
 chmod +x .git/hooks/pre-commit</code></pre>
     </div>
-    <p><strong>💡 Tip:</strong> The repo includes an <a href="https://github.com/code20/cursor-cline-addition/blob/main/.env.example" target="_blank"><code>.env.example</code></a> file — a starter template with all models pre-configured. Copy it to <code>.env</code>, add your OpenRouter key, and you're ready to go.</p>
+    <p><strong>💡 Tip:</strong> The repo includes an <a href="https://github.com/code20/cursor-cline-addition/blob/main/.env.example" target="_blank"><code>.env.example</code></a> file — a starter template with only the 3 active models and the swap menu. Copy it to <code>.env</code>, add your OpenRouter key, and you're ready to go.</p>
     <p>If <code>python</code> is not found, disable any Microsoft Store aliases (Windows) or ensure Python is in your PATH. On macOS/Linux, use <code>python3 --version</code> to verify the correct command.</p>
     <p>Create a virtual environment and install dependencies:</p>
 
@@ -542,7 +681,7 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
     </div>
 
     <h2 id="step3">Step 3: The Unified Proxy</h2>
-    <p>The proxy is the heart of the setup — a single Python script that routes your requests to OpenRouter with mode prefix support. <strong>All model IDs can be overridden in <code>.env</code></strong> — if a model changes on OpenRouter, just update the corresponding line and restart the proxy. No Python editing needed.</p>
+    <p>The proxy is the heart of the setup — a single Python script that routes your requests to OpenRouter with mode prefix support and automatic image detection. <strong>Only three models are configured:</strong> <code>DEFAULT_MODEL</code>, <code>PLANNING_MODEL</code>, and <code>VISION_MODEL</code>. To switch your workhorse, you change <code>DEFAULT_MODEL</code> in <code>.env</code> and restart — no Python editing needed.</p>
 
     <p><strong>Download the complete proxy script:</strong></p>
     <p>
@@ -555,7 +694,9 @@ pip3 install fastapi uvicorn httpx python-dotenv</code></pre>
         <li><strong>Expanded connection pool</strong> — handles Cline's concurrent requests without socket drops</li>
         <li><strong>Provider filtering</strong> — ignores flaky providers, retries on 502 errors</li>
         <li><strong>Reasoning disabled on DeepSeek</strong> — prevents empty tool-call responses</li>
-        <li><strong>Full model list exposed</strong> — Cline sees all available models</li>
+        <li><strong>Simplified 3‑model configuration</strong> — just <code>DEFAULT_MODEL</code>, <code>PLANNING_MODEL</code>, and <code>VISION_MODEL</code></li>
+        <li><strong>Mode prefix routing</strong> — <code>plan:</code>, <code>ask:</code>, <code>agent:</code> with automatic image detection</li>
+        <li><strong>Backend conflict detection</strong> — warns if multiple backends are accidentally uncommented</li>
         <li><strong>Prompt caching enabled</strong> — massive cost savings on repeated context</li>
         <li><strong>Backend switching</strong> — use OpenRouter or your own local models with one <code>.env</code> change</li>
     </ul>
@@ -584,11 +725,10 @@ LLM_BACKEND=local                                    # Switch from "openrouter" 
 LOCAL_API_URL=http://localhost:11434/v1              # Ollama default. Change to your endpoint.
 # OPENROUTER_API_KEY=sk-...                          # Not needed for local models
 
-# --- Local Models (Ollama, vLLM, LM Studio, etc.) ---
+# --- Active Models ---
 DEFAULT_MODEL=qwen2.5-coder:7b
 PLANNING_MODEL=qwen2.5-coder:14b
-BULK_MODEL=qwen2.5-coder:7b
-RING_MODEL=deepseek-r1:7b</code></pre>
+VISION_MODEL=qwen2.5-coder:7b</code></pre>
 
     <div class="callout">
         <strong>🔒 Privacy by design:</strong> The proxy script itself defaults to local-only mode — if <code>LLM_BACKEND</code> isn't set, no data leaves your machine. The guide sets it to <code>openrouter</code> because that's what we're here to set up, but you can switch to <code>local</code> at any time. One word in <code>.env</code>, and your data never leaves your network.
@@ -608,15 +748,20 @@ RING_MODEL=deepseek-r1:7b</code></pre>
     </table>
 
     <h3>Direct Provider Access</h3>
-    <p>The proxy also supports routing directly to a single provider (like OpenRouter, OpenAI, Anthropic) without model switching — just a transparent passthrough with no .env-based model switching or spending caps. This is useful for testing or when you need to bypass the proxy's routing logic entirely.</p>
+    <p>The proxy also supports routing directly to a single provider (like Anthropic, OpenAI) without OpenRouter in the middle. This is useful for testing or when you need to bypass the proxy's routing logic entirely.</p>
     <pre><code># .env — direct provider access
-        LLM_BACKEND=direct                                   # Passthrough mode — no routing, no spending cap
-        DIRECT_API_URL=https://api.anthropic.com/v1          # Any OpenAI-compatible endpoint
-        DIRECT_API_KEY=sk-ant-...                            # Your provider API key
-        DIRECT_API_PROVIDER=anthropic                        # "anthropic", "openai", or "groq"</code></pre>
-        <div class="callout">
-            <strong>⚠️ Warning:</strong> <code>LLM_BACKEND=direct</code> bypasses all proxy safeguards — no .env-based model switching, no provider filtering, and <strong>no spending cap</strong>. You are billed directly by the provider you point <code>DIRECT_API_URL</code> at. This is not the same as OpenRouter's prepaid system. Use with caution and monitor your usage.
-        </div>
+LLM_BACKEND=direct                                   # Passthrough mode — no routing, no spending cap
+DIRECT_API_URL=https://api.anthropic.com/v1          # Any OpenAI-compatible endpoint
+DIRECT_API_KEY=sk-ant-...                            # Your provider API key
+DIRECT_API_PROVIDER=anthropic                        # "anthropic", "openai", or "groq"
+
+# --- Active Models ---
+DEFAULT_MODEL=claude-sonnet-4-20250514
+PLANNING_MODEL=claude-sonnet-4-20250514
+VISION_MODEL=claude-sonnet-4-20250514</code></pre>
+    <div class="callout">
+        <strong>⚠️ Warning:</strong> <code>LLM_BACKEND=direct</code> bypasses all proxy safeguards — no .env-based model switching, no provider filtering, and <strong>no spending cap</strong>. You are billed directly by the provider. This is not the same as OpenRouter's prepaid system. Use with caution and monitor your usage.
+    </div>
 
     <div class="security-callout">
         <strong>🔒 Privacy advantage:</strong> When using local models, your code never leaves your network. No API keys, no external providers, no data retention concerns. Combined with the proxy binding to <code>127.0.0.1</code>, this gives you a completely air-gapped AI coding assistant if needed. For companies working on sensitive data, this means AI-assisted coding without anything ever leaving the building. The same rules, the same workflow — just running on your own hardware.
@@ -626,6 +771,11 @@ RING_MODEL=deepseek-r1:7b</code></pre>
     <div class="callout">
         <strong>⚠️ Important:</strong> Auto-start tasks can sometimes kill the proxy mid-session when Cursor reuses the terminal. If you notice the proxy shutting down unexpectedly during long coding sessions, run it manually in a standalone PowerShell window instead. The tasks are best for initial launch, not long-running reliability.
     </div>
+
+    <div class="callout" style="border-left-color: #f59e0b;">
+        <strong>⚙️ Operational note:</strong> Auto-start tasks improve convenience but introduce restart and fallback risks. If the task runner kills and reuses the terminal, the proxy may stop accepting requests mid-session. For long coding sessions, run the proxy manually in a standalone terminal. If you use systemd (Linux) or Task Scheduler (Windows), configure <code>Restart=on-failure</code> with a backoff to avoid rapid restart loops.
+    </div>
+
     <p>To launch the proxy and docs server automatically when you open any project, create a user-level tasks file.</p>
 
     <div class="os-tabs">
@@ -829,9 +979,10 @@ npm install -g @arabold/docs-mcp-server</code></pre>
 (127.0.0.1:8000) that routes all requests to OpenRouter. My default model is 
 set via DEFAULT_MODEL in .env. Mode prefixes control how Cline approaches tasks:
 
-- plan: → Plan mode (read-only, architecture/planning)
-- ask: → Questions without editing files
-- agent: → Explicit Act mode (same as default)
+- plan: → Plan mode (read-only, architecture/planning) — uses PLANNING_MODEL
+- ask: → Questions without editing files — uses DEFAULT_MODEL
+- agent: → Explicit Act mode (same as default) — uses DEFAULT_MODEL
+- No prefix → Act mode with full tools — uses DEFAULT_MODEL
 
 My MCP servers (kept minimal to control token costs):
 
@@ -869,16 +1020,19 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
 
     <div class="cheatsheet-box" id="cheatsheet">
         <h3 style="margin-top:0;">⚡ Quick Reference Cheatsheet</h3>
-        <p>The proxy uses <strong>mode prefixes</strong> to control how Cline approaches your task. Model selection is handled by <code>DEFAULT_MODEL</code> in your <code>.env</code> file — update it and restart the proxy to switch models.</p>
+        <p>The proxy uses <strong>mode prefixes</strong> to control how Cline approaches your task. Model selection is handled by <code>DEFAULT_MODEL</code> in your <code>.env</code> file — update it and restart the proxy to switch models. (Copy any ID from the SWAP MENU at the bottom of the OpenRouter section.)</p>
         <table>
             <thead><tr><th>Prompt Example</th><th>What Happens</th></tr></thead>
             <tbody>
-            <tr><td><code>plan: design a new auth flow</code></td><td>Plan mode (read-only) — model defined by PLANNING_MODEL in .env</td></tr>
-            <tr><td><code>agent: add Stripe checkout</code></td><td>Act mode with full tool use (same as default, just explicit)</td></tr>
-            <tr><td><code>ask: how does JWT refresh work?</code></td><td>Answers without editing files</td></tr>
-            <tr><td>Just type a coding request</td><td>Act mode — uses DEFAULT_MODEL, the reliable daily driver</td></tr>
+            <tr><td><code>plan: design a new auth flow</code></td><td>Plan mode (read-only) — uses PLANNING_MODEL from .env</td></tr>
+            <tr><td><code>agent: add Stripe checkout</code></td><td>Act mode with full tool use — uses DEFAULT_MODEL</td></tr>
+            <tr><td><code>ask: how does JWT refresh work?</code></td><td>Answers without editing files — uses DEFAULT_MODEL</td></tr>
+            <tr><td>Just type a coding request</td><td>Act mode — uses DEFAULT_MODEL, your reliable daily driver</td></tr>
+            <tr><td>Include an image in your prompt</td><td>Auto-detected — routes to VISION_MODEL (Perceptron Mk1)</td></tr>
             </tbody>
         </table>
+        <p style="margin-top:1rem;"><strong>🔀 To switch models:</strong> Edit <code>DEFAULT_MODEL</code> in <code>.env</code> (use the SWAP MENU for model IDs), save, restart the proxy. That's it. All mode prefixes will now use your new model. Switch between tasks, not mid-conversation.</p>
+        
         <h3 style="margin-top:1.5rem;">🛠️ MCP Tool Quick Reference</h3>
         <table>
             <thead><tr><th>You want to…</th><th>How to handle it</th></tr></thead>
@@ -936,13 +1090,18 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <p>Bookmark this. Everything you need to drive your setup without leaving Cline or checking the terminal.</p>
 
         <h3>🔀 Model Selection</h3>
+        <p><strong>Only 3 models are active.</strong> To switch your daily driver, change <code>DEFAULT_MODEL</code> in <code>.env</code> and restart the proxy. See the SWAP MENU at the bottom of the OpenRouter section for pre‑configured model IDs.</p>
         <table>
-            <thead><tr><th>What you want</th><th>How to do it</th></tr></thead>
+            <thead><tr><th>Task Type</th><th>Set DEFAULT_MODEL to</th></tr></thead>
             <tbody>
-            <tr><td>Set your default model</td><td>Edit <code>DEFAULT_MODEL</code> in <code>.env</code>, restart proxy</td></tr>
-            <tr><td>Switch models mid-session</td><td>Update <code>.env</code>, restart proxy, start a new task with <code>/newtask</code></td></tr>
-            <tr><td>Plan mode (read-only)</td><td>Type <code>plan:</code> before your prompt</td></tr>
-            <tr><td>Ask mode (no file edits)</td><td>Type <code>ask:</code> before your prompt</td></tr>
+            <tr><td>Normal coding (default)</td><td><code>deepseek/deepseek-v4-pro</code></td></tr>
+            <tr><td>Bulk edits (10+ files)</td><td><code>google/gemini-2.5-flash</code></td></tr>
+            <tr><td>Complex multi-step tasks</td><td><code>moonshotai/kimi-k2.5</code></td></tr>
+            <tr><td>Deep reasoning (no tools)</td><td><code>inclusionai/ring-2.6-1t</code></td></tr>
+            <tr><td>Simple questions</td><td><code>deepseek/deepseek-chat</code></td></tr>
+            <tr><td>Legacy compatibility</td><td><code>deepseek/deepseek-v4-flash</code></td></tr>
+            <tr><td>Plan mode (read-only)</td><td>Type <code>plan:</code> before your prompt (uses PLANNING_MODEL)</td></tr>
+            <tr><td>Ask mode (no file edits)</td><td>Type <code>ask:</code> before your prompt (uses DEFAULT_MODEL)</td></tr>
             </tbody>
         </table>
 
@@ -996,9 +1155,9 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <a href="https://github.com/code20/cursor-cline-addition/blob/main/check_models.ps1" target="_blank">check_models.ps1 on GitHub</a> —
         <a href="https://raw.githubusercontent.com/code20/cursor-cline-addition/main/check_models.ps1" target="_blank">Download raw</a>
     </p>
-    <p>This watcher checks whether each of your configured models still exists on OpenRouter. <strong>If a model is reported as missing, OpenRouter may have renamed or deprecated it.</strong> Check the <a href="https://openrouter.ai/models" target="_blank">OpenRouter models page</a> for the new ID, update your <code>.env</code> file, and restart the proxy. All your model variables will continue working — they point to the variable name, not the hardcoded ID.</p>
+    <p>This watcher checks whether your configured models still exist on OpenRouter. <strong>If a model is reported as missing, OpenRouter may have renamed or deprecated it.</strong> Check the <a href="https://openrouter.ai/models" target="_blank">OpenRouter models page</a> for the new ID, update your <code>.env</code> file, and restart the proxy.</p>
 
-    <p><strong>If a model is reported as missing:</strong> Go to <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a> and search for the replacement. OpenRouter may have renamed it (e.g., <code>deepseek/deepseek-v4</code> → <code>deepseek/deepseek-v4-pro</code>) or deprecated it in favour of a newer version. Copy the new model ID and update the corresponding line in the DEFAULTS section of your <code>.env</code>. Restart the proxy. Your model variables will continue working — they point to the variable name, not the hardcoded ID.</p>
+    <p><strong>If a model is reported as missing:</strong> Go to <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a> and search for the replacement. OpenRouter may have renamed it or deprecated it in favour of a newer version. Copy the new model ID and update <code>DEFAULT_MODEL</code> in your <code>.env</code>. Restart the proxy.</p>
 
     <h3>What to Do After Running the Script</h3>
     <table>
@@ -1006,7 +1165,7 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <tbody>
         <tr><td>Python packages outdated</td><td><code>pip install --upgrade fastapi uvicorn httpx python-dotenv</code> (inside venv)</td></tr>
         <tr><td>Global npm packages outdated</td><td><code>npm update -g</code> (review changelogs first if you're cautious)</td></tr>
-        <tr><td>Model missing (from <code>check_models</code>)</td><td>Update the corresponding line in <code>.env</code> with the new model ID from <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a>, then restart the proxy. Your model variables will continue working — they point to the variable name, not the hardcoded ID.</td></tr>
+        <tr><td>Model missing (from <code>check_models</code>)</td><td>Update <code>DEFAULT_MODEL</code> in <code>.env</code> with the new model ID from <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a>, then restart the proxy.</td></tr>
         </tbody>
     </table>
 
@@ -1021,10 +1180,13 @@ Built and tested on Windows 11. MCP servers kept minimal to control token costs.
         <tr><td>502 / "Connection error"</td><td>OpenRouter routed to flaky OpenAI provider</td><td>Added <code>"ignore": ["openai"]</code> to provider filter; retry on 502. Always check provider terms of service when using their models in production. OpenRouter automatically falls back to other providers for the same model if one is filtered.</td></tr>
         <tr><td>Images trigger wrong model</td><td>Image detection scanned entire message history</td><td>Now only checks the last message for images</td></tr>
         <tr><td>Built-in browser opens instead of Puppeteer</td><td>Cline bug #5947 bypasses "Disable browser" setting</td><td>Removed Puppeteer from MCP servers; browser tasks now handled manually</td></tr>
-        <tr><td>Kimi K2.5 cost too high</td><td>Was default for all tool-call follow-ups (800+ requests/week)</td><td>Switched default to DeepSeek V4 Pro; Kimi available as KIMI_MODEL in .env</td></tr>
+        <tr><td>Kimi K2.5 cost too high</td><td>Was default for all tool-call follow-ups (800+ requests/week)</td><td>Switched default to DeepSeek V4 Pro; Kimi available in swap menu</td></tr>
         <tr><td>Connection pool starvation</td><td><code>max_keepalive_connections=1</code> too restrictive</td><td>Raised to 20 connections, 100 max</td></tr>
         <tr><td>MCP servers burning tokens</td><td>Puppeteer and Gitingest added heavy context to every request</td><td>Removed both. Screenshots done manually, repo analysis via free external AI</td></tr>
+        <tr><td>Proxy won't start on macOS/Linux</td><td>Python path or permissions</td><td>Use <code>python3</code> instead of <code>python</code>. Ensure <code>chmod 600 .env</code> was run. If port 8000 is in use: <code>lsof -i :8000</code> to find and kill the process.</td></tr>
+        <tr><td>MCP servers not connecting (macOS/Linux)</td><td>npm global packages not in PATH</td><td>Use <code>nvm</code> to manage Node.js versions — avoids permission issues. Check <code>which npx</code> returns a valid path.</td></tr>
         <tr><td>Cline update breaks the setup</td><td>Cline occasionally changes message formats or MCP config schemas</td><td>If everything was working and suddenly isn't after a Cline update, check the <a href="https://github.com/cline/cline/releases" target="_blank">Cline changelog</a>. You can pin a specific version in VS Code/Cursor: go to the Cline extension page, click the gear icon next to "Uninstall", and select "Install Another Version".</td></tr>
+        <tr><td>Proxy refuses to start with "Multiple backends detected"</td><td>More than one backend section is uncommented in <code>.env</code></td><td>Open <code>.env</code>, comment out the backends you're not using, and leave only one active. The proxy will start normally.</td></tr>
         </tbody>
     </table>
 

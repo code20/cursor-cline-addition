@@ -2,13 +2,13 @@
 $catalog = Invoke-RestMethod -Uri https://openrouter.ai/api/v1/models
 $currentIds = $catalog.data.id
 $myModels = @(
-    "moonshotai/kimi-k2.5",
     "deepseek/deepseek-v4-pro",
     "google/gemini-2.5-flash",
+    "moonshotai/kimi-k2.5",
     "inclusionai/ring-2.6-1t",
-    "perceptron/perceptron-mk1",
     "deepseek/deepseek-v4-flash",
-    "deepseek/deepseek-chat"
+    "deepseek/deepseek-chat",
+    "perceptron/perceptron-mk1"
 )
 $missing = $myModels | Where-Object { $_ -notin $currentIds }
 if ($missing) {
